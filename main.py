@@ -1,7 +1,42 @@
 from models import Tournament, Player, Round
 
-# def tournament_view():
-tournament = Tournament()
+
+def tournament_view():
+    print("Un nouveau tournoi va commencer !")
+    name = input("Entrez le nom du tournoi: ")
+    place = input("Entrez le lieu où se déroule le tournoi: ")
+    date = input("Entrez la date du tournoi: ")
+    time_control = input("Entrez le type de contrôle de temps (bullet, blitz ou coup rapide): ")
+    number_of_rounds = int(input("Entrez le nombre de tours: "))
+    new_tournament = Tournament(name, place, date, time_control, number_of_rounds)
+    description = input("Entrez la description du tournoi: ")
+    new_tournament.description = description
+    return new_tournament
+
+
+tournament = tournament_view()
+
+
+def main_view():
+    print("Salut tu veux quoi ?")
+    print("1/ Gérer les joueurs ?")
+    print("2/ Gérer les rounds ?")
+    print("3/ Afficher le classement des joueurs ?")
+
+
+def main_controller():
+    main_view()
+    choice = input("Tapez 1, 2 ou 3: ")
+
+    if choice == 1:
+        players_controller()
+    elif choice == 2:
+        rounds_view()
+    elif choice == 3:
+        # affichage du classement
+        pass
+    else:
+        return
 
 
 def players_view():
@@ -20,6 +55,7 @@ def players_controller():
     choice = input("Tapez 1, 2, 3 ou 4: ")
 
     if choice == 1:
+        # il faut 8 joueurs
         add_player_view()
     elif choice == 2:
         modify_player_view()
@@ -84,28 +120,6 @@ def delete_player_view():
     main_controller()
 
 
-def main_view():
-    print("Salut tu veux quoi ?")
-    print("1/ Gérer les joueurs ?")
-    print("2/ Gérer les rounds ?")
-    print("3/ Afficher le classement des joueurs ?")
-
-
-def main_controller():
-    main_view()
-    choice = input("Tapez 1, 2 ou 3: ")
-
-    if choice == 1:
-        players_controller()
-    elif choice == 2:
-        rounds_view()
-    elif choice == 3:
-        # affichage du classement
-        pass
-    else:
-        return
-
-
 def rounds_view():
     print("Liste des rounds du tournoi:")
     for round in tournament.rounds:
@@ -123,9 +137,20 @@ def rounds_controller():
 
     if choice == 1:
         new_round = Round("round name") # nom temporaire
+        # ajouter les matchs en faisant les pairs de joueurs qui vont s'affronter:
+        #     1/ au 1er tour, trier les joueurs selon leur rang
+        #     2/ diviser les joueurs en 2 partie, le meilleur de la 1ère partie affronte le 1er de la seconde moitié
+        #     et ainsi de suite
+        #     3/ au prochain tour, trier les joueurs selon les points gagnés (et si égalité, de leur rang aussi)
+        #     4/ ensuite, associer les joueurs 1 et 2, 3 et 4, etc.
+        #     5/ répéter les étapes 3 et 4
         tournament.rounds.append(new_round)
     elif choice == 2:
         pass
+
+
+def ranking_view():
+    pass
 
 
 main_controller()
