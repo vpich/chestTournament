@@ -14,7 +14,7 @@ class Tournament:
     def __init__(self, name, place, date, time_control, number_of_rounds: int = 4):
         self.name = name
         self.place = place
-        # la date pourra à l'avenir être plusieurs jours, et non juste un
+        # la date pourra à l'avenir être plusieurs jours, et pas juste un jour
         self.date = date
         # le time_control sera forcément "bullet", "blitz" ou "coup rapide"
         self.time_control = time_control
@@ -26,7 +26,12 @@ class Tournament:
         self.description = ""
 
     def add_players(self, player):
+        assert type(player) == Player
         self.players.append(player)
+
+    def delete_player(self, player):
+        assert type(player) == Player
+        self.players.remove(player)
 
     def add_round(self, round):
         self.rounds.append(round)
@@ -34,7 +39,7 @@ class Tournament:
 
 class Match:
     # chaque match doit être stocké sous la forme d'un tuple de 2 listes:
-    # - une référence à une instance de joueur (????)
+    # - une instance de joueur
     # - et un score
     def __init__(self, player_one, player_two):
         self.contestants = [player_one, player_two]
