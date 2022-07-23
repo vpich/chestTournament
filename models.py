@@ -9,6 +9,9 @@ class Player:
         self.gender = gender
         self.rank = rank
 
+    def __str__(self):
+        return f"Joueur {self.firstname} {self.lastname}, classement: {self.rank}"
+
 
 class Tournament:
     def __init__(self, name, place, date, time_control, number_of_rounds: int = 4):
@@ -44,6 +47,12 @@ class Match:
     def __init__(self, player_one, player_two):
         self.contestants = [player_one, player_two]
         self.scores = []
+
+    def __str__(self):
+        if not self.scores:
+            return f"Cette partie oppose {self.contestants[0]} à {self.contestants[1]}, la partie est en cours."
+        else:
+            return f"Cette partie oppose {self.contestants[0]} à {self.contestants[1]}, la partie est terminé."
 
     def add_score_to_winner(self, winner: Player = None):
         score_player_one = 0
