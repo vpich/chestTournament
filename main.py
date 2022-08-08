@@ -1,4 +1,4 @@
-from models import Tournament, Player, Round
+from models import Tournament, Player, Round, Match
 
 
 def tournament_controller():
@@ -30,7 +30,7 @@ def main_controller(tournament):
     if choice == 1:
         players_controller(tournament)
     elif choice == 2:
-        rounds_view(tournament)
+        rounds_controller(tournament)
     elif choice == 3:
         # affichage du classement
         pass
@@ -136,28 +136,80 @@ def rounds_controller(tournament):
     choice = int(input("Tapez 1 ou 2: "))
 
     if choice == 1:
-        new_round = Round("round name") # nom temporaire
-        # lister les rounds existants, si y'en a déjà trois print tournoi terminé
-        # pour le joueur 1 tu regardes la liste des joueurs contre qui il a joué, prendre un des joueurs restants
-        # exemple joueur 1 est avec 3, créer les deux matchs
-        # envoyer vers match_controller
+        for round in tournament.rounds:
+            print(round)
+        if len(tournament.rounds) == len(tournament.players)-1:
+            print("Vous avez atteint la limite du nombre de tours, le tournoi est déjà terminé.")
+            main_controller(tournament)
+
+        new_round_number = len(tournament.rounds) + 1
+        new_round_name = f"Round {new_round_number}"
+        new_round = Round(new_round_name)
+        new_round.starting()
+        tournament.add_round(new_round)
+
+        players_history = {}
+        for player in tournament.players:
+            players_history[player.lastname] = []
+
+        for round in tournament.rounds:
+            for match in round.matches:
+                player1 = match.contestants[0]
+                player2 = match.contestants[1]
+                players_history[player1.lastname].append(player2)
+                players_history[player2.lastname].append(player1)
+
+
+        assigned_players = []
+        for player in tournament.players:
+            # si on a déjà trouvé un match au joueur, on s'en occupe pas
+            if player not in assigned_players:
+                # on parcourt tous les joueurs pour trouver un contestant
+                for other_player in tournament.players:
+                    # un contestant est bon si
+                    # - ce n'est pas le joueur lui même
+                    # - ce contestant potentiel n'a pas déjà un match dans ce round
+                    # - le joueur n'a jamais joué avec lui
+                    if (other_player != player
+                            and other_player not in assigned_players
+                            and other_player not in players_history[player.lastname]):
+                        new_match = Match(player, other_player)
+                        new_round.matches.append(new_match)
+                        assigned_players.append(player)
+                        assigned_players.append(other_player)
+                        break
+
 
         # ajouter les matchs en faisant les pairs de joueurs qui vont s'affronter:
         #     1/ au 1er tour, trier les joueurs selon leur rang
+        tournament.order_players_by_rank()
         #     2/ diviser les joueurs en 2 partie, le meilleur de la 1ère partie affronte le 1er de la seconde moitié
         #     et ainsi de suite
+        half = len(tournament.players)/2
+        first_half = tournament.players[:half]
+        second_half = tournament.players[half:]
+
+        for player_one, player_two in first_half, second_half:
+            new_match = Match(player_one, player_two)
+            new_round.matches.append(new_match)
+
         #     3/ au prochain tour, trier les joueurs selon les points gagnés (et si égalité, de leur rang aussi)
         #     4/ ensuite, associer les joueurs 1 et 2, 3 et 4, etc.
         #     5/ répéter les étapes 3 et 4
-        tournament.rounds.append(new_round)
+            tournament.rounds.append(new_round)
+            print("nouveau tour créé")
+            rounds_controller(tournament)
     elif choice == 2:
         pass
 
+
 def match_controller():
+    pass
     # print(tout les matchs)
     # modifier le score du quel ?
     # quel est le score ?
     # pour le match choisi faire match.add_score_to_winner()
+
 
 def ranking_view():
     pass
