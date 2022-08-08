@@ -32,10 +32,10 @@ def main_controller(tournament):
     elif choice == 2:
         rounds_controller(tournament)
     elif choice == 3:
-        # affichage du classement
-        pass
+        ranking_view(tournament)
     else:
-        return
+        print("Je n'ai pas compris votre choix.")
+        main_controller(tournament)
 
 
 def players_view(tournament):
@@ -81,7 +81,7 @@ def add_player_view(tournament):
 
 def modify_player_view(tournament):
     for player, i in enumerate(tournament.players):
-        print(f"{i}/ Supprimer joueur {player}")
+        print(f"{i}/ Modifier joueur {player}")
     choice = int(input("Tapez le numéro du joueur à modifier: "))
     player_to_modify = tournament.players[choice]
     print("Que souhaitez-vous modifier ?")
@@ -104,7 +104,7 @@ def modify_player_view(tournament):
         gender = input("Entrez le sexe du joueur: ")
         player_to_modify.gender = gender
     elif choice == 5:
-        rank = input("Entrez le score du joueur: ")
+        rank = int(input("Entrez le score du joueur: "))
         player_to_modify.rank = rank
     else:
         return
@@ -128,7 +128,10 @@ def rounds_view(tournament):
         print(round)
     print("------------------")
     print("1/ Commencer un nouveau round ?")
-    print("4/ Retour en arrière")
+    print("2/ Modifier un round ?")
+    print("3/ Supprimer un round ?")
+    print("4/ Gérer un match du round en cours ?")
+    print("5/ Retour en arrière")
 
 
 def rounds_controller(tournament):
@@ -136,56 +139,35 @@ def rounds_controller(tournament):
     choice = int(input("Tapez 1 ou 2: "))
 
     if choice == 1:
-        for round in tournament.rounds:
-            print(round)
-        if len(tournament.rounds) == len(tournament.players)-1:
-            print("Vous avez atteint la limite du nombre de tours, le tournoi est déjà terminé.")
-            main_controller(tournament)
-
-        new_round_number = len(tournament.rounds) + 1
-        new_round_name = f"Round {new_round_number}"
-        new_round = Round(new_round_name)
-        new_round.starting()
-        tournament.add_round(new_round)
-
-        players_history = {}
-        for player in tournament.players:
-            players_history[player.lastname] = []
-
-        for round in tournament.rounds:
-            for match in round.matches:
-                player1 = match.contestants[0]
-                player2 = match.contestants[1]
-                players_history[player1.lastname].append(player2)
-                players_history[player2.lastname].append(player1)
+        add_round_controller(tournament)
+    elif choice == 2:
+        pass
+    elif choice == 3:
+        pass
+    elif choice == 4:
+        match_controller()
+    elif choice == 5:
+        main_controller(tournament)
 
 
-        assigned_players = []
-        for player in tournament.players:
-            # si on a déjà trouvé un match au joueur, on s'en occupe pas
-            if player not in assigned_players:
-                # on parcourt tous les joueurs pour trouver un contestant
-                for other_player in tournament.players:
-                    # un contestant est bon si
-                    # - ce n'est pas le joueur lui même
-                    # - ce contestant potentiel n'a pas déjà un match dans ce round
-                    # - le joueur n'a jamais joué avec lui
-                    if (other_player != player
-                            and other_player not in assigned_players
-                            and other_player not in players_history[player.lastname]):
-                        new_match = Match(player, other_player)
-                        new_round.matches.append(new_match)
-                        assigned_players.append(player)
-                        assigned_players.append(other_player)
-                        break
+def add_round_controller(tournament):
+    if len(tournament.rounds) == len(tournament.players) - 1:
+        print("Vous avez atteint la limite du nombre de tours, le tournoi est déjà terminé.")
+        main_controller(tournament)
 
+    new_round_number = len(tournament.rounds) + 1
+    new_round_name = f"Tour {new_round_number}"
+    new_round = Round(new_round_name)
+    new_round.starting()
+    tournament.add_round(new_round)
 
+    if new_round_number == 1:
         # ajouter les matchs en faisant les pairs de joueurs qui vont s'affronter:
         #     1/ au 1er tour, trier les joueurs selon leur rang
         tournament.order_players_by_rank()
         #     2/ diviser les joueurs en 2 partie, le meilleur de la 1ère partie affronte le 1er de la seconde moitié
         #     et ainsi de suite
-        half = len(tournament.players)/2
+        half = len(tournament.players) // 2
         first_half = tournament.players[:half]
         second_half = tournament.players[half:]
 
@@ -193,26 +175,69 @@ def rounds_controller(tournament):
             new_match = Match(player_one, player_two)
             new_round.matches.append(new_match)
 
+        print("nouveau tour créé")
+        rounds_controller(tournament)
+
+    elif new_round_number > 1:
         #     3/ au prochain tour, trier les joueurs selon les points gagnés (et si égalité, de leur rang aussi)
+        previous_round = tournament.rounds[-1]
+        for match in previous_round.matches:
+            if match.scores[0] == 1:
+                tournament.players.sort(key=match.contestants[1].__eq__)
+            elif match.scores[0] == 0:
+                tournament.players.sort(key=match.contestants[0].__eq__)
+            elif match.scores[0] == 0.5:
+                if match.contestants[0].rank > match.contestants[1].rank:
+                    tournament.players.sort(key=match.contestants[1].__eq__)
+                elif match.contestants[0].rank < match.contestants[1].rank:
+                    tournament.players.sort(key=match.contestants[0].__eq__)
+                elif match.contestants[0].rank == match.contestants[1].rank:
+                    tournament.players.sort(key=match.contestants[1].__eq__)
+                else:
+                    print("Erreur")
+
         #     4/ ensuite, associer les joueurs 1 et 2, 3 et 4, etc.
-        #     5/ répéter les étapes 3 et 4
-            tournament.rounds.append(new_round)
-            print("nouveau tour créé")
-            rounds_controller(tournament)
-    elif choice == 2:
-        pass
+        i = 0
+        while i < len(tournament.players):
+            player_one = tournament.players[i]
+            player_two = tournament.players[i + 1]
+            new_match = Match(player_one, player_two)
+            new_round.matches.append(new_match)
+            i += 2
+        print("Fin de la création des matchs")
+
+        print("nouveau tour créé")
+        rounds_controller(tournament)
+
+
+def match_view():
+    for match in tournament.rounds[-1]:
+        print(match)
+    print("----------------------------------")
+    print("Que souhaitez vous faire ?")
+    print("1/ Mettre à jour les scores ?")
+    print("2/ Retour en arrière")
 
 
 def match_controller():
-    pass
     # print(tout les matchs)
     # modifier le score du quel ?
     # quel est le score ?
     # pour le match choisi faire match.add_score_to_winner()
+    match_view()
+    choice = input("Tapez 1 ou 2:")
+    if choice == 1:
+        pass
+    elif choice == 2:
+        rounds_controller(tournament)
 
 
-def ranking_view():
-    pass
+def ranking_view(tournament):
+    tournament.order_players_by_rank()
+    for player in tournament.players:
+        i = 1
+        print(f"{i}: {player}")
+    main_controller(tournament)
 
 
 tournament = tournament_controller()
