@@ -89,7 +89,7 @@ class Round:
         self.end_time = None
 
     def __str__(self):
-        return f"Tour {self.name} composé de {self.matches[0]} et {self.matches[1]}"
+        return f"{self.name}"
 
     def add_match(self, match):
         self.matches.append(match)
