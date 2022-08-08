@@ -39,6 +39,16 @@ class Tournament:
     def add_round(self, round):
         self.rounds.append(round)
 
+    def order_players_by_last_name(self):
+        self.players.sort(key=lambda player: player.lastname)
+        for player in self.players:
+            print(player)
+
+    def order_players_by_rank(self):
+        self.players.sort(key=lambda player: player.rank)
+        for player in self.players:
+            print(player)
+
 
 class Match:
     # chaque match doit être stocké sous la forme d'un tuple de 2 listes:
@@ -78,6 +88,9 @@ class Round:
         self.start_time = None
         self.end_time = None
 
+    def __str__(self):
+        return f"Tour {self.name} composé de {self.matches[0]} et {self.matches[1]}"
+
     def add_match(self, match):
         self.matches.append(match)
 
@@ -86,3 +99,19 @@ class Round:
 
     def ending(self):
         self.end_time = datetime.now()
+
+
+joueur_1 = Player("Patrick", "Roger", "hier", "M", 12)
+joueur_2 = Player("Sylvia", "Oliveira", "hier", "F", 1)
+joueur_3 = Player("Jeannot", "Lumière", "hier", "M", 4)
+joueur_4 = Player("Pouet", "Prout", "hier", "NA", 89)
+
+tournoi_test = Tournament("Tournoi test", "place", "date", "time control")
+tournoi_test.add_players(joueur_1)
+tournoi_test.add_players(joueur_2)
+tournoi_test.add_players(joueur_3)
+tournoi_test.add_players(joueur_4)
+
+tournoi_test.order_players_by_last_name()
+print("=====")
+tournoi_test.order_players_by_rank()
