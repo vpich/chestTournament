@@ -1,18 +1,28 @@
+from datetime import datetime
+
 from models import Tournament, Player, Round, Match
 
 
 def tournament_controller():
+    print("****************************")
     print("Un nouveau tournoi va commencer !")
     # name = input("Entrez le nom du tournoi: ")
     # place = input("Entrez le lieu où se déroule le tournoi: ")
-    # date = input("Entrez la date du tournoi: ")
+    end_date = check_date_format(input("Entrez la date de fin de tournoi: "))
     # time_control = input("Entrez le type de contrôle de temps (bullet, blitz ou coup rapide): ")
     # number_of_rounds = int(input("Entrez le nombre de tours: "))
     # new_tournament = Tournament(name, place, date, time_control, number_of_rounds)
-    new_tournament = Tournament("name", "place", "date", "time_control", 4)
+    today = datetime.date(datetime.now())
+    if end_date < today:
+        raise print("La date ne peut pas être antérieure à aujourd'hui.")
+    else:
+        date = f"Du {today.strftime('%d/%m/%Y')} au {end_date.strftime('%d/%m/%Y')}"
+    new_tournament = Tournament("name", "place", date, "time_control", 4)
     # description = input("Entrez la description du tournoi: ")
     # new_tournament.description = description
+    print(f"{date}")
     print("Tournoi bien créé")
+    print("*****************************")
     return new_tournament
 
 
@@ -36,6 +46,7 @@ def main_controller(tournament):
     else:
         print("Je n'ai pas compris votre choix.")
         main_controller(tournament)
+    print("-----------------")
 
 
 def players_view(tournament):
@@ -58,9 +69,9 @@ def players_controller(tournament):
         # il faut 8 joueurs
         add_player_view(tournament)
     elif choice == 2:
-        modify_player_view(tournament)
+        modify_player_controller(tournament)
     elif choice == 3:
-        delete_player_view(tournament)
+        delete_player_controller(tournament)
     elif choice == 4:
         main_controller(tournament)
     else:
@@ -68,10 +79,18 @@ def players_controller(tournament):
         players_controller(tournament)
 
 
+def check_date_format(user_input):
+    try:
+        date_to_check = datetime.strptime(user_input, "%d/%m/%Y")
+        return datetime.date(date_to_check)
+    except ValueError:
+        raise ValueError("Format de date invalide.")
+
+
 def add_player_view(tournament):
     firstname = input("Entrez le prénom du joueur: ")
     lastname = input("Entrez le nom de famille du joueur: ")
-    date_of_birth = input("Entrez la date de naissance du joueur: ")
+    date_of_birth = check_date_format(input("Entrez la date de naissance du joueur (format JJ/MM/AAAA): "))
     gender = input("Entrez le sexe du joueur: ")
     new_player = Player(firstname, lastname, date_of_birth, gender)
     tournament.players.append(new_player)
@@ -79,9 +98,9 @@ def add_player_view(tournament):
     players_controller(tournament)
 
 
-def modify_player_view(tournament):
+def modify_player_controller(tournament):
     for player, i in enumerate(tournament.players):
-        print(f"{i}/ Modifier joueur {player}")
+        print(f"{i}/ Modifier {player}")
     choice = int(input("Tapez le numéro du joueur à modifier: "))
     player_to_modify = tournament.players[choice]
     print("Que souhaitez-vous modifier ?")
@@ -98,7 +117,7 @@ def modify_player_view(tournament):
         lastname = input("Entrez le nom de famille du joueur: ")
         player_to_modify.lastname = lastname
     elif choice == 3:
-        date_of_birth = input("Entrez la date de naissance du joueur: ")
+        date_of_birth = check_date_format(input("Entrez la date de naissance du joueur: "))
         player_to_modify.date_of_birth = date_of_birth
     elif choice == 4:
         gender = input("Entrez le sexe du joueur: ")
@@ -112,41 +131,38 @@ def modify_player_view(tournament):
     players_controller(tournament)
 
 
-def delete_player_view(tournament):
-    for player, i in enumerate(tournament.players):
-        print(f"{i}/ Supprimer joueur {player}")
-    choice = int(input("Tapez le numéro du joueur à supprimer: "))
+def delete_player_controller(tournament):
+    for i, player in enumerate(tournament.players):
+        print(f"{i + 1}/ Supprimer {player} ?")
+    choice = int(input("Tapez le numéro du joueur à supprimer: ")) - 1
     player_to_delete = tournament.players[choice]
     tournament.delete_player(player_to_delete)
-    print("Le joueur a bien été supprimé")
+    print(f"Le joueur {player_to_delete.firstname} {player_to_delete.lastname} a bien été supprimé.")
     players_controller(tournament)
 
 
 def rounds_view(tournament):
-    print("Liste des rounds du tournoi:")
+    print("Liste des tours du tournoi:")
     for round in tournament.rounds:
         print(round)
     print("------------------")
-    print("1/ Commencer un nouveau round ?")
-    print("2/ Modifier un round ?")
-    print("3/ Supprimer un round ?")
-    print("4/ Gérer un match du round en cours ?")
-    print("5/ Retour en arrière")
+    print("1/ Commencer un nouveau tour ?")
+    print("2/ Supprimer un tour ?")
+    print("3/ Gérer un match du tour en cours ?")
+    print("4/ Retour en arrière")
 
 
 def rounds_controller(tournament):
     rounds_view(tournament)
-    choice = int(input("Tapez 1 ou 2: "))
+    choice = int(input("Tapez le nombre souhaité: "))
 
     if choice == 1:
         add_round_controller(tournament)
     elif choice == 2:
-        pass
+        delete_round_controller(tournament)
     elif choice == 3:
-        pass
+        match_controller(tournament)
     elif choice == 4:
-        match_controller()
-    elif choice == 5:
         main_controller(tournament)
 
 
@@ -161,7 +177,7 @@ def add_round_controller(tournament):
     new_round.starting()
     tournament.add_round(new_round)
 
-    if new_round_number == 1:
+    if len(tournament.rounds) == 1:
         # ajouter les matchs en faisant les pairs de joueurs qui vont s'affronter:
         #     1/ au 1er tour, trier les joueurs selon leur rang
         tournament.order_players_by_rank()
@@ -171,14 +187,19 @@ def add_round_controller(tournament):
         first_half = tournament.players[:half]
         second_half = tournament.players[half:]
 
-        for player_one, player_two in first_half, second_half:
+        i = 0
+        for player_one in first_half:
+            player_two = second_half[i]
             new_match = Match(player_one, player_two)
             new_round.matches.append(new_match)
+            print(
+                f"Le match joueur {player_one.firstname} contre joueur {player_two.firstname} a été ajouté au {new_round}")
+            i += 1
 
-        print("nouveau tour créé")
+        print("Premier tour créé")
         rounds_controller(tournament)
 
-    elif new_round_number > 1:
+    elif len(tournament.rounds) > 1:
         #     3/ au prochain tour, trier les joueurs selon les points gagnés (et si égalité, de leur rang aussi)
         previous_round = tournament.rounds[-1]
         for match in previous_round.matches:
@@ -194,6 +215,7 @@ def add_round_controller(tournament):
                 elif match.contestants[0].rank == match.contestants[1].rank:
                     tournament.players.sort(key=match.contestants[1].__eq__)
                 else:
+                    # -- a modifier en mettant une vraie gestion d'erreur
                     print("Erreur")
 
         #     4/ ensuite, associer les joueurs 1 et 2, 3 et 4, etc.
@@ -203,15 +225,30 @@ def add_round_controller(tournament):
             player_two = tournament.players[i + 1]
             new_match = Match(player_one, player_two)
             new_round.matches.append(new_match)
+            print(
+                f"Le match joueur {player_one.firstname} contre joueur {player_two.firstname} a été ajouté au {new_round}")
             i += 2
         print("Fin de la création des matchs")
 
-        print("nouveau tour créé")
+        print(f"Le {new_round} a été créé.")
+        print("------------------")
         rounds_controller(tournament)
 
 
-def match_view():
-    for match in tournament.rounds[-1]:
+def delete_round_controller(tournament):
+    for i, round in enumerate(tournament.rounds):
+        print(f"{i + 1}/ Supprimer {round}")
+    choice = int(input("Tapez le numéro du tour à supprimer: ")) - 1
+    round_to_delete = tournament.rounds[choice]
+    tournament.delete_round(round_to_delete)
+    print(f"Le {round_to_delete} a bien été supprimé.")
+    print("-----------------------")
+    rounds_controller(tournament)
+
+
+def match_view(tournament):
+    print("Liste des matchs de ce tour: ")
+    for match in tournament.rounds[-1].matches:
         print(match)
     print("----------------------------------")
     print("Que souhaitez vous faire ?")
@@ -219,24 +256,45 @@ def match_view():
     print("2/ Retour en arrière")
 
 
-def match_controller():
-    # print(tout les matchs)
-    # modifier le score du quel ?
-    # quel est le score ?
-    # pour le match choisi faire match.add_score_to_winner()
-    match_view()
-    choice = input("Tapez 1 ou 2:")
+def match_controller(tournament):
+    match_view(tournament)
+    choice = int(input("Tapez 1 ou 2: "))
     if choice == 1:
-        pass
+        print("Quel match doit être modifié ?")
+        for i, match in enumerate(tournament.rounds[-1].matches):
+            print(f"{i + 1}/ Supprimer {match}")
+        match_selected = int(input(f"Tapez le numéro du match à mettre à jour: ")) - 1
+        update_winner(tournament.rounds[-1].matches[match_selected])
+        rounds_controller(tournament)
     elif choice == 2:
         rounds_controller(tournament)
 
 
+def update_winner(match_selected):
+    print("Qui a gagné ?")
+    print(f"1/ {match_selected.contestants[0].firstname} {match_selected.contestants[0].lastname} ?")
+    print(f"2/ {match_selected.contestants[1].firstname} {match_selected.contestants[1].lastname} ?")
+    print("3/ Il y a eu égalité.")
+    winner = int(input("Tapez 1 ou 2 pour sélectionner le vainqueur: "))
+    if winner == 1:
+        match_selected.add_score_to_winner(match_selected.contestants[0])
+        print(f"{match_selected.scores[0]} point ajouté au {match_selected.contestants[0]}")
+    elif winner == 2:
+        match_selected.add_score_to_winner(match_selected.contestants[1])
+        print(f"{match_selected.scores[1]} point ajouté au {match_selected.contestants[1]}")
+    elif winner == 3:
+        match_selected.add_score_to_winner(None)
+        print(f"{match_selected.scores[0]} point ajouté aux 2 joueurs")
+    print("------------------------")
+
+
 def ranking_view(tournament):
+    # actuellement, cela classe par score total du plus petit au plus grand
+    # il faudra inverser l'ordre pour pouvoir avoir le classement des joueurs
     tournament.order_players_by_rank()
-    for player in tournament.players:
-        i = 1
-        print(f"{i}: {player}")
+    for i, player in enumerate(tournament.players):
+        print(f"{i + 1}/ {player}")
+    print("----------------------")
     main_controller(tournament)
 
 
