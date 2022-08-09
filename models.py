@@ -1,8 +1,8 @@
-from datetime import datetime
+from datetime import datetime, date
 
 
 class Player:
-    def __init__(self, firstname, lastname, date_of_birth, gender, rank: int = 0):
+    def __init__(self, firstname, lastname, date_of_birth: date, gender, rank: int = 0):
         self.firstname = firstname
         self.lastname = lastname
         self.date_of_birth = date_of_birth
@@ -39,15 +39,18 @@ class Tournament:
     def add_round(self, round):
         self.rounds.append(round)
 
+    def delete_round(self, round):
+        self.rounds.remove(round)
+
     def order_players_by_last_name(self):
         self.players.sort(key=lambda player: player.lastname)
-        for player in self.players:
-            print(player)
+        # for player in self.players:
+        #     print(player)
 
     def order_players_by_rank(self):
         self.players.sort(key=lambda player: player.rank)
-        for player in self.players:
-            print(player)
+        # for player in self.players:
+        #     print(player)
 
 
 class Match:
@@ -57,27 +60,33 @@ class Match:
     def __init__(self, player_one, player_two):
         self.contestants = [player_one, player_two]
         self.scores = []
+        self.in_progress = True
 
     def __str__(self):
-        if not self.scores:
+        if self.in_progress:
             return f"Cette partie oppose {self.contestants[0]} à {self.contestants[1]}, la partie est en cours."
         else:
-            return f"Cette partie oppose {self.contestants[0]} à {self.contestants[1]}, la partie est terminé."
+            return f"Cette partie oppose {self.contestants[0]} à {self.contestants[1]}, la partie est terminée."
 
     def add_score_to_winner(self, winner: Player = None):
         score_player_one = 0
         score_player_two = 0
 
         if winner is None:
-            score_player_one += 0.5
-            score_player_two += 0.5
+            score_player_one = 0.5
+            score_player_two = 0.5
+            self.contestants[0].rank += score_player_one
+            self.contestants[1].rank += score_player_two
         elif winner == self.contestants[0]:
-            score_player_one += 1
+            score_player_one = 1
+            self.contestants[0].rank += score_player_one
         elif winner == self.contestants[1]:
-            score_player_two += 1
+            score_player_two = 1
+            self.contestants[1].rank += score_player_two
 
         self.scores.append(score_player_one)
         self.scores.append(score_player_two)
+        self.in_progress = False
 
 
 class Round:
@@ -101,17 +110,17 @@ class Round:
         self.end_time = datetime.now()
 
 
-joueur_1 = Player("Patrick", "Roger", "hier", "M", 12)
-joueur_2 = Player("Sylvia", "Oliveira", "hier", "F", 1)
-joueur_3 = Player("Jeannot", "Lumière", "hier", "M", 4)
-joueur_4 = Player("Pouet", "Prout", "hier", "NA", 89)
-
-tournoi_test = Tournament("Tournoi test", "place", "date", "time control")
-tournoi_test.add_players(joueur_1)
-tournoi_test.add_players(joueur_2)
-tournoi_test.add_players(joueur_3)
-tournoi_test.add_players(joueur_4)
-
-tournoi_test.order_players_by_last_name()
-print("=====")
-tournoi_test.order_players_by_rank()
+# joueur_1 = Player("Patrick", "Roger", "hier", "M", 12)
+# joueur_2 = Player("Sylvia", "Oliveira", "hier", "F", 1)
+# joueur_3 = Player("Jeannot", "Lumière", "hier", "M", 4)
+# joueur_4 = Player("Pouet", "Prout", "hier", "NA", 89)
+#
+# tournoi_test = Tournament("Tournoi test", "place", "date", "time control")
+# tournoi_test.add_players(joueur_1)
+# tournoi_test.add_players(joueur_2)
+# tournoi_test.add_players(joueur_3)
+# tournoi_test.add_players(joueur_4)
+#
+# tournoi_test.order_players_by_last_name()
+# print("=====")
+# tournoi_test.order_players_by_rank()
