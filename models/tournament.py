@@ -13,6 +13,9 @@ class Tournament:
         # description = remarques générales du directeur de tournoi
         self.description = ""
 
+    def __str__(self):
+        return f"{self.name}"
+
     def add_players(self, player):
         assert type(player) == Player
         self.players.append(player)

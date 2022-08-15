@@ -1,3 +1,6 @@
+from .player import Player
+
+
 class Match:
     # chaque match doit être stocké sous la forme d'un tuple de 2 listes:
     # - une instance de joueur

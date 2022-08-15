@@ -1,26 +1,47 @@
 from datetime import datetime
 
-from models import Tournament, Player, Round, Match
+from models import Tournament, Player, Round, Match, AllTournaments
 
 # -- à rajouter:
 #     -- création et enregistrement de rapport
 #     -- blocage d'ajout de round quand celui en cours n'est pas terminé
 #     -- classement dans le bon ordre
 
-all_tournaments = []
+all_tournaments = AllTournaments()
+
+
+def check_int_input(user_input):
+    if user_input.isdigit():
+        return True
+    else:
+        print("Je n'ai pas compris votre choix.")
+        print("Veuillez saisir un chiffre pour sélectionner votre choix.")
+        return False
 
 
 def tournaments_view():
     # afficher tous les tournois de manière bourrine
-    print("Salut tu veux quoi ?")
+    print("")
+    print("***************************")
+    print("Bienvenue dans cette application de gestion de tournoi d'échec")
+    print("*************************")
+    print("")
+    print("Que souhaitez-vous faire ?")
     print("1/ Créer un nouveau tournoi ?")
     print("2/ Générer le rapport d'un tournoi existant ?")
     print("3/ Modifier un tournoi ?")
+    print("4/ Supprimer un tournoi ?")
+    print("5/ Quitter")
 
 
 def tournaments_controller():
     tournaments_view()
-    choice = int(input("Tapez 1 ou 2: "))
+    choice = input("Tapez 1, 2, 3, 4 ou 5: ")
+
+    if check_int_input(choice):
+        choice = int(choice)
+    else:
+        tournaments_controller()
 
     if choice == 1:
         add_tournament_controller()
@@ -28,6 +49,11 @@ def tournaments_controller():
         show_tournaments_controller()
     elif choice == 3:
         edit_tournament_controller()
+    elif choice == 4:
+        delete_tournament_controller()
+    elif choice == 5:
+        print("Vous quittez le programme.")
+        exit()
     else:
         print("Je n'ai pas compris votre choix.")
         tournaments_controller()
@@ -36,13 +62,36 @@ def tournaments_controller():
 
 def edit_tournament_controller():
     #     print la liste des tournois avec chacun un numéro
+    print("Quel tournoi souhaitez-vous modifier ?")
+    for i, tournament in enumerate(all_tournaments.tournaments):
+        print(f"{i + 1}/ Le {tournament} ?")
     #     lui demander un input pour en sélectionner un
-    #     main_controller(selected_tournament)
-    pass
+    selected_tournament = input("Tapez le numéro du tournoi à modifier: ")
+    if check_int_input(selected_tournament):
+        selected_tournament = int(selected_tournament) - 1
+    else:
+        edit_tournament_controller()
+
+    if selected_tournament < 0:
+        print("Je n'ai pas compris votre choix.")
+        print(f"Veuillez saisir un chiffre entre 1 et {len(all_tournaments.tournaments)}.")
+        edit_tournament_controller()
+    elif selected_tournament >= len(all_tournaments.tournaments):
+        print("Je n'ai pas compris votre choix.")
+        print(f"Veuillez saisir un chiffre entre 1 et {len(all_tournaments.tournaments)}.")
+        edit_tournament_controller()
+
+    main_controller(all_tournaments.tournaments[selected_tournament])
 
 
 def show_tournaments_controller():
-    #     faire comme les joueurs: print la liste des tournois avec chacun un numéro et pour celui sélectionné print toutes les infos du tournoi
+    #     faire comme les joueurs: print la liste des tournois
+    #     avec chacun un numéro et pour celui sélectionné print toutes les infos du tournoi
+    print("Pour quel tournoi souhaitez-vous éditer un rapport ?")
+    for i, tournament in enumerate(all_tournaments.tournaments):
+        print(f"{i + 1}/ Le {tournament} ?")
+    selected_tournament = int(input("Tapez le numéro du tournoi choisi: ")) - 1
+    print(f"Vous avez choisi le tournoi {selected_tournament}")
     pass
 
 
@@ -65,13 +114,38 @@ def add_tournament_controller():
     # new_tournament.description = description
     print(f"{date}")
     print("Tournoi bien créé")
-    all_tournaments.append(new_tournament)
+    all_tournaments.add_tournament(new_tournament)
     print("*****************************")
     tournaments_controller()
 
 
+def delete_tournament_controller():
+    for i, tournament in enumerate(all_tournaments.tournaments):
+        print(f"{i + 1}/ Supprimer {tournament.name} ?")
+    choice = input("Tapez le numéro du tournoi à supprimer: ")
+
+    if check_int_input(choice):
+        choice = int(choice) - 1
+    else:
+        delete_tournament_controller()
+
+    if choice > len(all_tournaments.tournaments):
+        print("Je n'ai pas compris votre choix.")
+        print(f"Veuillez saisir un chiffre compris entre 1 et {len(all_tournaments.tournaments)}")
+        delete_tournament_controller()
+
+    tournament_to_delete = all_tournaments.tournaments[choice]
+    all_tournaments.delete_tournament(tournament_to_delete)
+    print(
+        f"Le tournoi {tournament_to_delete.name} a bien été supprimé."
+    )
+    tournaments_controller()
+
+
 def main_view():
-    print("Salut tu veux quoi ?")
+    print("Gestion du tournoi en cours")
+    print("--------------")
+    print("Que souhaitez-vous faire ?")
     print("1/ Gérer les joueurs ?")
     print("2/ Gérer les rounds ?")
     print("3/ Afficher le classement des joueurs ?")
@@ -79,7 +153,12 @@ def main_view():
 
 def main_controller(tournament):
     main_view()
-    choice = int(input("Tapez 1, 2 ou 3: "))
+    choice = input("Tapez 1, 2 ou 3: ")
+
+    if check_int_input(choice):
+        choice = int(choice)
+    else:
+        main_controller(tournament)
 
     if choice == 1:
         players_controller(tournament)
@@ -107,7 +186,12 @@ def players_view(tournament):
 def players_controller(tournament):
     print("---Début player controller")
     players_view(tournament)
-    choice = int(input("Tapez 1, 2, 3 ou 4: "))
+    choice = input("Tapez 1, 2, 3 ou 4: ")
+
+    if check_int_input(choice):
+        choice = int(choice)
+    else:
+        players_controller(tournament)
 
     if choice == 1:
         # il faut 8 joueurs
@@ -145,9 +229,20 @@ def add_player_view(tournament):
 
 
 def modify_player_controller(tournament):
-    for player, i in enumerate(tournament.players):
-        print(f"{i}/ Modifier {player}")
-    choice = int(input("Tapez le numéro du joueur à modifier: "))
+    for i, player in enumerate(tournament.players):
+        print(f"{i + 1}/ Modifier {player}")
+    choice = input("Tapez le numéro du joueur à modifier: ")
+
+    if check_int_input(choice):
+        choice = int(choice) - 1
+    else:
+        modify_player_controller(tournament)
+
+    if choice > len(tournament.players):
+        print("Je n'ai pas compris votre choix.")
+        print(f"Veuillez saisir un chiffre compris entre 1 et {len(tournament.players)}")
+        modify_player_controller(tournament)
+
     player_to_modify = tournament.players[choice]
     print("Que souhaitez-vous modifier ?")
     print("1/ Son prénom ?")
@@ -182,7 +277,18 @@ def modify_player_controller(tournament):
 def delete_player_controller(tournament):
     for i, player in enumerate(tournament.players):
         print(f"{i + 1}/ Supprimer {player} ?")
-    choice = int(input("Tapez le numéro du joueur à supprimer: ")) - 1
+    choice = input("Tapez le numéro du joueur à supprimer: ")
+
+    if check_int_input(choice):
+        choice = int(choice) - 1
+    else:
+        delete_player_controller(tournament)
+
+    if choice > tournament.players:
+        print("Je n'ai pas compris votre choix.")
+        print(f"Veuillez saisir un chiffre compris entre 1 et {len(tournament.players)}")
+        delete_player_controller(tournament)
+
     player_to_delete = tournament.players[choice]
     tournament.delete_player(player_to_delete)
     print(
