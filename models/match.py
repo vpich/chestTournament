@@ -23,14 +23,14 @@ class Match:
         if winner is None:
             score_player_one = 0.5
             score_player_two = 0.5
-            self.contestants[0].points_gagnes += score_player_one
-            self.contestants[1].points_gagnes += score_player_two
+            self.contestants[0].total_points += score_player_one
+            self.contestants[1].total_points += score_player_two
         elif winner == self.contestants[0]:
             score_player_one = 1
-            self.contestants[0].points_gagnes += score_player_one
+            self.contestants[0].total_points += score_player_one
         elif winner == self.contestants[1]:
             score_player_two = 1
-            self.contestants[1].points_gagnes += score_player_two
+            self.contestants[1].total_points += score_player_two
 
         self.scores.append(score_player_one)
         self.scores.append(score_player_two)
