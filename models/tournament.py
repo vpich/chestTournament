@@ -1,3 +1,6 @@
+from .player import Player
+
+
 class Tournament:
     def __init__(self, name, place, date, time_control, number_of_rounds: int = 4):
         self.name = name
@@ -14,7 +17,7 @@ class Tournament:
         self.description = ""
 
     def __str__(self):
-        return f"{self.name}"
+        return f"Tournoi {self.name}"
 
     def add_players(self, player):
         assert type(player) == Player
@@ -36,6 +39,7 @@ class Tournament:
         #     print(player)
 
     def order_players_by_points_and_ranks(self):
-        self.players.sort(key=lambda player: (player.points_gagnes, player.rank))
+        self.players.sort(key=lambda player: (player.total_points, player.rank))
+        self.players.reverse()
         # for player in self.players:
         #     print(player)
