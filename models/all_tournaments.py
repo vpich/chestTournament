@@ -8,7 +8,7 @@ class AllTournaments:
     def __str__(self):
         print("Voici tous les tournois enregistrés: ")
         for i, tournament in enumerate(self.tournaments):
-            print(f"{i}/ {tournament}")
+            print(f"{i + 1}/ {tournament}")
 
     def add_tournament(self, tournament):
         assert type(tournament) == Tournament

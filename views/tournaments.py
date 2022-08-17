@@ -1,0 +1,12 @@
+def tournaments_view():
+    print("")
+    print("***************************")
+    print("Bienvenue dans cette application de gestion de tournoi d'échec")
+    print("*************************")
+    print("")
+    print("Que souhaitez-vous faire ?")
+    print("1/ Créer un nouveau tournoi ?")
+    print("2/ Générer le rapport d'un tournoi existant ?")
+    print("3/ Modifier un tournoi ?")
+    print("4/ Supprimer un tournoi ?")
+    print("5/ Quitter")
