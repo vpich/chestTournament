@@ -9,34 +9,8 @@ db = TinyDB("db.json")
 
 
 def save_data(all_tournaments):
-    # for data in tournament:
     for tournament in all_tournaments:
-        db.insert({"Type": "Tournoi",
-                   "Name": f"{tournament.name}",
-                   "Place": f"{tournament.place}",
-                   "Date": f"{tournament.date}",
-                   "TimeControl": f"{tournament.time_control}",
-                   "Rounds": f"{len(tournament.rounds)}",
-                   "Description": f"{tournament.description}"})
-        for player in tournament.players:
-            db.insert({"Type": "Player",
-                       "Firstname": f"{player.firstname}",
-                       "Lastname": f"{player.lastname}",
-                       "Gender": f"{player.gender}",
-                       "DateOfBirth": f"{player.date_of_birth}",
-                       "Rank": f"{player.rank}",
-                       "TotalPoints": f"{player.total_points}"})
-        for round in tournament.rounds:
-            db.insert({"Type": "Round",
-                       "Name": f"{round.name}",
-                       "Matches": f"{len(round.matches)}"})
-            for match in round.matches:
-                db.insert({"Type": "Match",
-                           "Player1": f"{match.contestants[0]}",
-                           "Player2": f"{match.contestants[1]}",
-                           "ScorePlayer1": f"{match.scores[0]}",
-                           "ScorePlayer2": f"{match.scores[1]}",
-                           "InProgress": f"{match.in_progress}"})
+        tournament.save()
     print("Enregistrement terminé.")
     tournaments_controller()
 
@@ -328,6 +302,7 @@ def add_player_controller(tournament):
     gender = input("Entrez le sexe du joueur: ")
     new_player = Player(firstname, lastname, date_of_birth, gender)
     tournament.players.append(new_player)
+    tournament.save()
     print(f"Le joueur {firstname} {lastname} a bien été ajouté au tournoi.")
     players_controller(tournament)
 
@@ -420,76 +395,96 @@ def rounds_controller(tournament):
 
 def add_round_controller(tournament):
     # Pas de début de tournoi si nombre pair a rajouter
-    if len(tournament.rounds) == len(tournament.players) - 1:
-        print(
-            "Vous avez atteint la limite du nombre de tours, le tournoi est déjà terminé."
-        )
+    if len(tournament.players) % 2 != 0:
+        print("Vous ne pouvez pas commencer de parties tant que le nombre de joueurs est impair.")
         selected_tournament_controller(tournament)
-
-    new_round_number = len(tournament.rounds) + 1
-    new_round_name = f"Tour {new_round_number}"
-    new_round = Round(new_round_name)
-    new_round.starting()
-    tournament.add_round(new_round)
-
-    if len(tournament.rounds) == 1:
-        # ajouter les matchs en faisant les pairs de joueurs qui vont s'affronter:
-        #     1/ au 1er tour, trier les joueurs selon leur rang
-        tournament.order_players_by_points_and_ranks()
-        #     2/ diviser les joueurs en 2 partie, le meilleur de la 1ère partie affronte le 1er de la seconde moitié
-        #     et ainsi de suite
-        half = len(tournament.players) // 2
-        first_half = tournament.players[:half]
-        second_half = tournament.players[half:]
-
-        i = 0
-        for player_one in first_half:
-            player_two = second_half[i]
-            new_match = Match(player_one, player_two)
-            new_round.matches.append(new_match)
+    else:
+        # if len(tournament.rounds) == len(tournament.players) - 1:
+        if len(tournament.rounds) >= tournament.number_of_rounds:
             print(
-                f"Le match joueur {player_one.firstname} contre joueur {player_two.firstname} a été ajouté au {new_round}"
+                "Vous avez atteint la limite du nombre de tours, le tournoi est déjà terminé."
             )
-            i += 1
+            selected_tournament_controller(tournament)
 
-        print("Premier tour créé")
-        rounds_controller(tournament)
+        new_round_number = len(tournament.rounds) + 1
+        new_round_name = f"Tour {new_round_number}"
+        new_round = Round(new_round_name)
+        new_round.starting()
+        tournament.add_round(new_round)
 
-    elif len(tournament.rounds) > 1:
-        #     3/ au prochain tour, trier les joueurs selon les points gagnés (et si égalité, de leur rang aussi)
-        previous_round = tournament.rounds[-1]
-        for match in previous_round.matches:
-            if match.scores[0] == 1:
-                tournament.players.sort(key=match.contestants[1].__eq__)
-            elif match.scores[0] == 0:
-                tournament.players.sort(key=match.contestants[0].__eq__)
-            elif match.scores[0] == 0.5:
-                if match.contestants[0].rank > match.contestants[1].rank:
-                    tournament.players.sort(key=match.contestants[1].__eq__)
-                elif match.contestants[0].rank < match.contestants[1].rank:
-                    tournament.players.sort(key=match.contestants[0].__eq__)
-                elif match.contestants[0].rank == match.contestants[1].rank:
-                    tournament.players.sort(key=match.contestants[1].__eq__)
-                else:
-                    # -- a modifier en mettant une vraie gestion d'erreur
-                    print("Erreur")
+        players_history = {}
+        for player in tournament.players:
+            players_history[player.lastname] = []
 
-        #     4/ ensuite, associer les joueurs 1 et 2, 3 et 4, etc.
-        i = 0
-        while i < len(tournament.players):
-            player_one = tournament.players[i]
-            player_two = tournament.players[i + 1]
-            new_match = Match(player_one, player_two)
-            new_round.matches.append(new_match)
-            print(
-                f"Le match joueur {player_one.firstname} contre joueur {player_two.firstname} a été ajouté au {new_round}"
-            )
-            i += 2
-        print("Fin de la création des matchs")
+        if len(tournament.rounds) == 1:
+            # ajouter les matchs en faisant les pairs de joueurs qui vont s'affronter:
+            #     1/ au 1er tour, trier les joueurs selon leur rang
+            tournament.order_players_by_points_and_ranks()
+            #     2/ diviser les joueurs en 2 partie, le meilleur de la 1ère partie affronte le 1er de la seconde moitié
+            #     et ainsi de suite
+            half = len(tournament.players) // 2
+            first_half = tournament.players[:half]
+            second_half = tournament.players[half:]
 
-        print(f"Le {new_round} a été créé.")
-        print("------------------")
-        rounds_controller(tournament)
+            i = 0
+            for player_one in first_half:
+                player_two = second_half[i]
+                players_history[player_one.lastname].append(player_two)
+                players_history[player_two.lastname].append(player_one)
+                new_match = Match(player_one, player_two)
+                new_round.matches.append(new_match)
+                print(
+                    f"Le match joueur {player_one.firstname} contre joueur {player_two.firstname} a été ajouté au {new_round}"
+                )
+                i += 1
+
+            print("Premier tour créé")
+            rounds_controller(tournament)
+
+        elif len(tournament.rounds) > 1:
+            #     3/ au prochain tour, trier les joueurs selon les points gagnés (et si égalité, de leur rang aussi)
+            tournament.order_players_by_points_and_ranks()
+
+            #     4/ ensuite, associer les joueurs 1 et 2, 3 et 4, etc.
+            #     5/ Si le joueur 1 a déjà joué contre le joueur, associez le plutôt au joueur 3
+
+            assigned_players = []
+            for player in tournament.players:
+                # si on a déjà trouvé un match au joueur, on s'en occupe pas
+                if player not in assigned_players:
+                    # on parcourt tous les joueurs pour trouver un contestant
+                    for other_player in tournament.players:
+                        # un contestant est bon si
+                        # - ce n'est pas le joueur lui même
+                        # - ce contestant potentiel n'a pas déjà un match dans ce round
+                        # - le joueur n'a jamais joué avec lui
+                        if (other_player != player
+                                and other_player not in assigned_players
+                                and other_player not in players_history[player.lastname]):
+                            new_match = Match(player, other_player)
+                            new_round.matches.append(new_match)
+                            assigned_players.append(player)
+                            assigned_players.append(other_player)
+                            break
+                tournament.rounds.append(new_round)
+                print("nouveau tour créé")
+                rounds_controller(tournament)
+
+            i = 0
+            while i < len(tournament.players):
+                player_one = tournament.players[i]
+                player_two = tournament.players[i + 1]
+                new_match = Match(player_one, player_two)
+                new_round.matches.append(new_match)
+                print(
+                    f"Le match joueur {player_one.firstname} contre joueur {player_two.firstname} a été ajouté au {new_round}"
+                )
+                i += 2
+            print("Fin de la création des matchs")
+
+            print(f"Le {new_round} a été créé.")
+            print("------------------")
+            rounds_controller(tournament)
 
 
 def delete_round_controller(tournament):
@@ -557,5 +552,30 @@ def ranking_controller(tournament):
     print("----------------------")
 
 
-tournaments_controller()
-# time_control_selection()
+if __name__ == "__main__":
+    Tournoi1 = Tournament("Premier", "Ici", "Du 23/08/2022 au 23/08/2022", "Blitz", 6)
+    Tournoi2 = Tournament("Deuxième", "Là-bas", "Du 23/08/2022 au 23/08/2022", "Bullet", 4)
+    Joueur1 = Player("Mario", "Super", datetime.strptime("01/01/2000", "%d/%m/%Y"), "M")
+    Joueur2 = Player("Master", "Chief", datetime.strptime("02/02/2000", "%d/%m/%Y"), "M")
+    Joueur3 = Player("Samus", "Metroid", datetime.strptime("03/03/2000", "%d/%m/%Y"), "F")
+    Joueur4 = Player("Chun", "Li", datetime.strptime("04/04/2000", "%d/%m/%Y"), "F")
+    Joueur5 = Player("Bruce", "Wayne", datetime.strptime("05/05/2000", "%d/%m/%Y"), "M")
+    Joueur6 = Player("Coco", "Pops", datetime.strptime("06/06/2000", "%d/%m/%Y"), "M")
+    Joueur7 = Player("Pizza", "Saumon", datetime.strptime("07/07/2000", "%d/%m/%Y"), "F")
+    Joueur8 = Player("Bonbon", "Cicaplast", datetime.strptime("08/08/2000", "%d/%m/%Y"), "F")
+    Tournoi1.players.append(Joueur1)
+    Tournoi1.players.append(Joueur2)
+    Tournoi1.players.append(Joueur3)
+    Tournoi1.players.append(Joueur4)
+    Tournoi1.players.append(Joueur5)
+    Tournoi1.players.append(Joueur6)
+    Tournoi1.players.append(Joueur7)
+    Tournoi1.players.append(Joueur8)
+    Joueur9 = Player("Clavier", "Souris", datetime.strptime("09/09/2000", "%d/%m/%Y"), "M")
+    Joueur10 = Player("Casque", "Ecran", datetime.strptime("10/10/2000", "%d/%m/%Y"), "F")
+    Tournoi2.players.append(Joueur9)
+    Tournoi2.players.append(Joueur10)
+    all_tournaments.add_tournament(Tournoi1)
+    all_tournaments.add_tournament(Tournoi2)
+
+    tournaments_controller()
