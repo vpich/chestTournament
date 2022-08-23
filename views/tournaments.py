@@ -9,5 +9,4 @@ def tournaments_view():
     print("2/ Générer le rapport d'un tournoi existant ?")
     print("3/ Modifier un tournoi ?")
     print("4/ Supprimer un tournoi ?")
-    print("5/ Enregistrer tous les tournois ?")
-    print("6/ Quitter")
+    print("5/ Quitter")
