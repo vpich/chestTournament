@@ -1,9 +1,44 @@
 from datetime import datetime
+from tinydb import TinyDB, Query
 
 from models import AllTournaments, Tournament, Player, Round, Match
 from views import tournaments_view, selected_tournament_view, players_view, matches_view, rounds_view
 
 all_tournaments = AllTournaments()
+db = TinyDB("db.json")
+
+
+def save_data(all_tournaments):
+    # for data in tournament:
+    for tournament in all_tournaments:
+        db.insert({"Type": "Tournoi",
+                   "Name": f"{tournament.name}",
+                   "Place": f"{tournament.place}",
+                   "Date": f"{tournament.date}",
+                   "TimeControl": f"{tournament.time_control}",
+                   "Rounds": f"{len(tournament.rounds)}",
+                   "Description": f"{tournament.description}"})
+        for player in tournament.players:
+            db.insert({"Type": "Player",
+                       "Firstname": f"{player.firstname}",
+                       "Lastname": f"{player.lastname}",
+                       "Gender": f"{player.gender}",
+                       "DateOfBirth": f"{player.date_of_birth}",
+                       "Rank": f"{player.rank}",
+                       "TotalPoints": f"{player.total_points}"})
+        for round in tournament.rounds:
+            db.insert({"Type": "Round",
+                       "Name": f"{round.name}",
+                       "Matches": f"{len(round.matches)}"})
+            for match in round.matches:
+                db.insert({"Type": "Match",
+                           "Player1": f"{match.contestants[0]}",
+                           "Player2": f"{match.contestants[1]}",
+                           "ScorePlayer1": f"{match.scores[0]}",
+                           "ScorePlayer2": f"{match.scores[1]}",
+                           "InProgress": f"{match.in_progress}"})
+    print("Enregistrement terminé.")
+    tournaments_controller()
 
 
 def check_int_input(user_input):
@@ -20,12 +55,14 @@ def check_date_format(user_input):
         date_to_check = datetime.strptime(user_input, "%d/%m/%Y")
         return datetime.date(date_to_check)
     except ValueError:
-        raise ValueError("Format de date invalide.")
+        # raise ValueError("Format de date invalide.")
+        print("Format de date invalide.")
+        return False
 
 
 def tournaments_controller():
     tournaments_view()
-    choice = input("Tapez 1, 2, 3, 4 ou 5: ")
+    choice = input("Tapez 1, 2, 3, 4, 5 ou 6: ")
 
     if check_int_input(choice):
         choice = int(choice)
@@ -37,10 +74,12 @@ def tournaments_controller():
     elif choice == 2:
         show_tournaments_controller()
     elif choice == 3:
-        edit_tournament_controller()
+        manage_tournament_controller()
     elif choice == 4:
         delete_tournament_controller()
     elif choice == 5:
+        save_data(all_tournaments.tournaments)
+    elif choice == 6:
         print("Vous quittez le programme.")
         exit()
     else:
@@ -49,7 +88,7 @@ def tournaments_controller():
     print("-----------------")
 
 
-def edit_tournament_controller():
+def manage_tournament_controller():
     #     print la liste des tournois avec chacun un numéro
     if len(all_tournaments.tournaments) == 0:
         print("Il n'y a aucun tounoi en cours")
@@ -62,16 +101,16 @@ def edit_tournament_controller():
         if check_int_input(selected_tournament):
             selected_tournament = int(selected_tournament) - 1
         else:
-            edit_tournament_controller()
+            manage_tournament_controller()
 
         if selected_tournament < 0:
             print("Je n'ai pas compris votre choix.")
             print(f"Veuillez saisir un chiffre entre 1 et {len(all_tournaments.tournaments)}.")
-            edit_tournament_controller()
+            manage_tournament_controller()
         elif selected_tournament >= len(all_tournaments.tournaments):
             print("Je n'ai pas compris votre choix.")
             print(f"Veuillez saisir un chiffre entre 1 et {len(all_tournaments.tournaments)}.")
-            edit_tournament_controller()
+            manage_tournament_controller()
 
         selected_tournament_controller(all_tournaments.tournaments[selected_tournament])
 
@@ -91,21 +130,54 @@ def show_tournaments_controller():
     tournaments_controller()
 
 
+def time_control_selection():
+    time_control_choices = ["Bullet", "Blitz", "Coup rapide"]
+    print("Quel type de contrôle de temps souhaitez-vous ?")
+    for i, choice in enumerate(time_control_choices):
+        print(f"{i + 1}/ {choice}")
+
+    user_choice = input("Entrez le numéro du choix à selectionner: ")
+
+    if not check_int_input(user_choice):
+        time_control_selection()
+    else:
+        user_choice = int(user_choice)
+        if user_choice > 3:
+            print("Je n'ai pas compris votre choix.")
+            time_control_selection()
+        elif user_choice == 1:
+            return time_control_choices[0]
+        elif user_choice == 2:
+            return time_control_choices[1]
+        elif user_choice == 3:
+            return time_control_choices[2]
+        else:
+            print("Je n'ai pas compris votre choix. Veuillez taper un nombre entre 1 et 3.")
+            time_control_selection()
+
+
 def add_tournament_controller():
     print("****************************")
-    print("Un nouveau tournoi va commencer !")
+    print("Un nouveau tournoi va commencer aujourd'hui")
     # name = input("Entrez le nom du tournoi: ")
     # place = input("Entrez le lieu où se déroule le tournoi: ")
+
     end_date = check_date_format(input("Entrez la date de fin de tournoi: "))
-    # time_control = input("Entrez le type de contrôle de temps (bullet, blitz ou coup rapide): ")
-    # number_of_rounds = int(input("Entrez le nombre de tours: "))
-    # new_tournament = Tournament(name, place, date, time_control, number_of_rounds)
     today = datetime.date(datetime.now())
+    if not end_date:
+        add_tournament_controller()
     if end_date < today:
-        raise print("La date ne peut pas être antérieure à aujourd'hui.")
+        print("La date ne peut pas être antérieure à aujourd'hui.")
+        add_tournament_controller()
     else:
         date = f"Du {today.strftime('%d/%m/%Y')} au {end_date.strftime('%d/%m/%Y')}"
-    new_tournament = Tournament("name", "place", date, "time_control", 4)
+
+    # print(time_control_selection())
+    time_control = time_control_selection()
+    # number_of_rounds = int(input("Entrez le nombre de tours: "))
+    # new_tournament = Tournament(name, place, date, time_control, number_of_rounds)
+
+    new_tournament = Tournament("name", "place", date, time_control, 4)
     # description = input("Entrez la description du tournoi: ")
     # new_tournament.description = description
     print(f"{date}")
@@ -152,18 +224,72 @@ def selected_tournament_controller(tournament):
         selected_tournament_controller(tournament)
 
     if choice == 1:
-        players_controller(tournament)
+        edit_tournament_controller(tournament)
     elif choice == 2:
-        rounds_controller(tournament)
+        players_controller(tournament)
     elif choice == 3:
+        rounds_controller(tournament)
+    elif choice == 4:
         ranking_controller(tournament)
         selected_tournament_controller(tournament)
-    elif choice == 4:
+    elif choice == 5:
         tournaments_controller()
     else:
         print("Je n'ai pas compris votre choix.")
         selected_tournament_controller(tournament)
     print("-----------------")
+
+
+def edit_tournament_controller(tournament):
+    print(
+        f"Nom: {tournament.name}, Lieu: {tournament.place}, Date(s): {tournament.date}, Contrôle du temps: {tournament.time_control}, Nombre de tours: {tournament.number_of_rounds}")
+    print("Que souhaitez-vous modifier ?")
+    print("1/ Le nom ?")
+    print("2/ Le lieu ?")
+    print("3/ Les dates ?")
+    print("4/ Le contrôle du temps ?")
+    print("5/ Le nombre de tours ?")
+    print("6/ Retour en arrière")
+    choice = input("Taper un chiffre entre 1 et 6: ")
+    if check_int_input(choice):
+        choice = int(choice)
+        if choice == 1:
+            name = input("Entrez le nom du tournoi: ")
+            tournament.name = name
+        elif choice == 2:
+            place = input("Entrez le lieu: ")
+            tournament.place = place
+        elif choice == 3:
+            end_date = check_date_format(input("Entrez la date de fin de tournoi: "))
+            today = datetime.date(datetime.now())
+            if not end_date:
+                edit_tournament_controller(tournament)
+            if end_date < today:
+                print("La date ne peut pas être antérieure à aujourd'hui.")
+                edit_tournament_controller(tournament)
+            else:
+                date = f"Du {today.strftime('%d/%m/%Y')} au {end_date.strftime('%d/%m/%Y')}"
+            tournament.date = date
+        elif choice == 4:
+            time_control = time_control_selection()
+            tournament.time_control = time_control
+        elif choice == 5:
+            user_input = input("Entrez le nombre de tours: ")
+            if check_int_input(user_input):
+                number_of_rounds = int(user_input)
+                tournament.number_of_rounds = number_of_rounds
+            else:
+                print("Saisie invalide. Veuillez rentrer un chiffre entier.")
+                edit_tournament_controller(tournament)
+        elif choice == 6:
+            selected_tournament_controller(tournament)
+        else:
+            print("Je n'ai pas compris votre choix.")
+            edit_tournament_controller(tournament)
+        selected_tournament_controller(tournament)
+    else:
+        print("Je n'ai pas compris votre choix.")
+        edit_tournament_controller(tournament)
 
 
 def players_controller(tournament):
@@ -196,6 +322,9 @@ def add_player_controller(tournament):
     date_of_birth = check_date_format(
         input("Entrez la date de naissance du joueur (format JJ/MM/AAAA): ")
     )
+    if not date_of_birth:
+        print("La date de naissance est invalide, veuillez taper une date au format JJ/MM/AAAA")
+        add_player_controller(tournament)
     gender = input("Entrez le sexe du joueur: ")
     new_player = Player(firstname, lastname, date_of_birth, gender)
     tournament.players.append(new_player)
@@ -236,6 +365,9 @@ def edit_player_controller(tournament):
         date_of_birth = check_date_format(
             input("Entrez la date de naissance du joueur: ")
         )
+        if not date_of_birth:
+            print("La date de naissance est invalide, veuillez taper une date au format JJ/MM/AAAA")
+            edit_player_controller(tournament)
         player_to_modify.date_of_birth = date_of_birth
     elif choice == 4:
         gender = input("Entrez le sexe du joueur: ")
@@ -426,3 +558,4 @@ def ranking_controller(tournament):
 
 
 tournaments_controller()
+# time_control_selection()
