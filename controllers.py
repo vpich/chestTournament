@@ -36,7 +36,7 @@ def check_date_format(user_input):
 
 def tournaments_controller():
     tournaments_view()
-    choice = input("Tapez 1, 2, 3, 4, 5 ou 6: ")
+    choice = input("Tapez 1, 2, 3, 4 ou 5: ")
 
     if check_int_input(choice):
         choice = int(choice)
@@ -52,8 +52,6 @@ def tournaments_controller():
     elif choice == 4:
         delete_tournament_controller()
     elif choice == 5:
-        save_data(all_tournaments.tournaments)
-    elif choice == 6:
         print("Vous quittez le programme.")
         exit()
     else:
@@ -188,7 +186,12 @@ def delete_tournament_controller():
         tournaments_controller()
 
 
+players_history = {}
+
+
 def selected_tournament_controller(tournament):
+    for player in tournament.players:
+        players_history[player.firstname] = []
     selected_tournament_view()
     choice = input("Tapez 1, 2 ou 3: ")
 
@@ -302,7 +305,7 @@ def add_player_controller(tournament):
     gender = input("Entrez le sexe du joueur: ")
     new_player = Player(firstname, lastname, date_of_birth, gender)
     tournament.players.append(new_player)
-    tournament.save()
+    # tournament.save()
     print(f"Le joueur {firstname} {lastname} a bien été ajouté au tournoi.")
     players_controller(tournament)
 
@@ -388,7 +391,7 @@ def rounds_controller(tournament):
     elif choice == 2:
         delete_round_controller(tournament)
     elif choice == 3:
-        matches_controller(tournament)
+        edit_round_controller(tournament)
     elif choice == 4:
         selected_tournament_controller(tournament)
 
@@ -412,16 +415,8 @@ def add_round_controller(tournament):
         new_round.starting()
         tournament.add_round(new_round)
 
-        players_history = {}
-        for player in tournament.players:
-            players_history[player.lastname] = []
-
         if len(tournament.rounds) == 1:
-            # ajouter les matchs en faisant les pairs de joueurs qui vont s'affronter:
-            #     1/ au 1er tour, trier les joueurs selon leur rang
             tournament.order_players_by_points_and_ranks()
-            #     2/ diviser les joueurs en 2 partie, le meilleur de la 1ère partie affronte le 1er de la seconde moitié
-            #     et ainsi de suite
             half = len(tournament.players) // 2
             first_half = tournament.players[:half]
             second_half = tournament.players[half:]
@@ -429,8 +424,8 @@ def add_round_controller(tournament):
             i = 0
             for player_one in first_half:
                 player_two = second_half[i]
-                players_history[player_one.lastname].append(player_two)
-                players_history[player_two.lastname].append(player_one)
+                players_history[player_one.firstname].append(player_two)
+                players_history[player_two.firstname].append(player_one)
                 new_match = Match(player_one, player_two)
                 new_round.matches.append(new_match)
                 print(
@@ -439,14 +434,11 @@ def add_round_controller(tournament):
                 i += 1
 
             print("Premier tour créé")
+            print(players_history)
             rounds_controller(tournament)
 
         elif len(tournament.rounds) > 1:
-            #     3/ au prochain tour, trier les joueurs selon les points gagnés (et si égalité, de leur rang aussi)
             tournament.order_players_by_points_and_ranks()
-
-            #     4/ ensuite, associer les joueurs 1 et 2, 3 et 4, etc.
-            #     5/ Si le joueur 1 a déjà joué contre le joueur, associez le plutôt au joueur 3
 
             assigned_players = []
             for player in tournament.players:
@@ -460,26 +452,18 @@ def add_round_controller(tournament):
                         # - le joueur n'a jamais joué avec lui
                         if (other_player != player
                                 and other_player not in assigned_players
-                                and other_player not in players_history[player.lastname]):
+                                and other_player not in players_history[player.firstname]):
                             new_match = Match(player, other_player)
                             new_round.matches.append(new_match)
                             assigned_players.append(player)
                             assigned_players.append(other_player)
+                            players_history[player.firstname].append(other_player)
+                            players_history[other_player.firstname].append(player)
+                            print(
+                                f"Le match joueur {player.firstname} contre joueur {other_player.firstname} a été ajouté au {new_round}"
+                            )
                             break
-                tournament.rounds.append(new_round)
-                print("nouveau tour créé")
-                rounds_controller(tournament)
-
-            i = 0
-            while i < len(tournament.players):
-                player_one = tournament.players[i]
-                player_two = tournament.players[i + 1]
-                new_match = Match(player_one, player_two)
-                new_round.matches.append(new_match)
-                print(
-                    f"Le match joueur {player_one.firstname} contre joueur {player_two.firstname} a été ajouté au {new_round}"
-                )
-                i += 2
+            print(players_history)
             print("Fin de la création des matchs")
 
             print(f"Le {new_round} a été créé.")
@@ -498,18 +482,36 @@ def delete_round_controller(tournament):
     rounds_controller(tournament)
 
 
-def matches_controller(tournament):
-    matches_view(tournament)
-    choice = int(input("Tapez 1 ou 2: "))
-    if choice == 1:
-        print("Quel match doit être modifié ?")
-        for i, match in enumerate(tournament.rounds[-1].matches):
-            print(f"{i + 1}/ {match}")
-        match_selected = int(input(f"Tapez le numéro du match à mettre à jour: ")) - 1
-        update_winner(tournament.rounds[-1].matches[match_selected])
+def edit_round_controller(tournament):
+    if not tournament.rounds:
+        print("Il n'y a pas encore de tour créé dans ce tournoi.")
         rounds_controller(tournament)
-    elif choice == 2:
-        rounds_controller(tournament)
+    else:
+        print("Quel tour souhaitez vous modifier ?")
+        for i, round in enumerate(tournament.rounds):
+            print(f"{i + 1}/ {round} ?")
+        choice = input("Tapez le numéro du tour à sélectionner: ")
+        if not check_int_input(choice):
+            print("Je n'ai pas compris votre choix.")
+            edit_round_controller(tournament)
+        else:
+            matches_controller(tournament.rounds[int(choice) - 1])
+            rounds_controller(tournament)
+
+
+def matches_controller(round):
+    matches_view(round)
+    match_selected = input("Tapez le numéro du match à mettre à jour: ")
+    if not check_int_input(match_selected):
+        print("Je n'ai pas compris votre choix.")
+        matches_controller(round)
+    else:
+        match_selected = int(match_selected) - 1
+        if match_selected < len(round.matches):
+            update_winner(round.matches[match_selected])
+        else:
+            print("Je n'ai pas compris votre choix.")
+            matches_controller(round)
 
 
 def update_winner(match_selected):
