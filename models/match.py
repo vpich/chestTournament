@@ -9,6 +9,7 @@ class Match:
         self.contestants = [player_one, player_two]
         self.scores = []
         self.in_progress = True
+        self.result = ()
 
     def __str__(self):
         if self.in_progress:
@@ -34,4 +35,6 @@ class Match:
 
         self.scores.append(score_player_one)
         self.scores.append(score_player_two)
+
+        self.result = (self.contestants, self.scores)
         self.in_progress = False
