@@ -1,8 +1,4 @@
-def matches_view(tournament):
-    print("Liste des matchs de ce tour: ")
-    for match in tournament.rounds[-1].matches:
-        print(match)
-    print("----------------------------------")
-    print("Que souhaitez vous faire ?")
-    print("1/ Mettre à jour les scores ?")
-    print("2/ Retour en arrière")
+def matches_view(round):
+    print("Quel match souhaitez-vous modifier ?")
+    for i, match in enumerate(round.matches):
+        print(f"{i + 1}/ {match} ?")
