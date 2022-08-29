@@ -8,8 +8,12 @@ all_tournaments = AllTournaments()
 db = TinyDB("db.json")
 
 
-def save_data(all_tournaments):
-    for tournament in all_tournaments:
+def load_data(tournaments):
+    pass
+
+
+def save_data(tournaments):
+    for tournament in tournaments:
         tournament.save()
     print("Enregistrement terminé.")
     tournaments_controller()
@@ -29,7 +33,6 @@ def check_date_format(user_input):
         date_to_check = datetime.strptime(user_input, "%d/%m/%Y")
         return datetime.date(date_to_check)
     except ValueError:
-        # raise ValueError("Format de date invalide.")
         print("Format de date invalide.")
         return False
 
@@ -46,7 +49,8 @@ def tournaments_controller():
     if choice == 1:
         add_tournament_controller()
     elif choice == 2:
-        show_tournaments_controller()
+        # show_tournaments_controller()
+        save_data(all_tournaments.tournaments)
     elif choice == 3:
         manage_tournament_controller()
     elif choice == 4:
@@ -88,17 +92,9 @@ def manage_tournament_controller():
 
 
 def show_tournaments_controller():
-    #     faire comme les joueurs: print la liste des tournois
-    #     avec chacun un numéro et pour celui sélectionné print toutes les infos du tournoi
     print(f"Il y a actuellement {len(all_tournaments.tournaments)} tournoi(s) enregistré(s).")
     for tournament in all_tournaments.tournaments:
         ranking_controller(tournament)
-    # print("Pour quel tournoi souhaitez-vous éditer un rapport ?")
-    # for i, tournament in enumerate(all_tournaments.tournaments):
-    #     print(f"{i + 1}/ Le {tournament} ?")
-    # selected_tournament = int(input("Tapez le numéro du tournoi choisi: ")) - 1
-    # print(f"Vous avez choisi le tournoi {all_tournaments.tournaments[selected_tournament].name}")
-    # ranking_view(all_tournaments.tournaments[selected_tournament])
     tournaments_controller()
 
 
@@ -134,6 +130,11 @@ def add_tournament_controller():
     # name = input("Entrez le nom du tournoi: ")
     # place = input("Entrez le lieu où se déroule le tournoi: ")
 
+    if not all_tournaments.tournaments:
+        tournament_id = 1
+    else:
+        tournament_id = len(all_tournaments.tournaments)
+
     end_date = check_date_format(input("Entrez la date de fin de tournoi: "))
     today = datetime.date(datetime.now())
     if not end_date:
@@ -149,7 +150,7 @@ def add_tournament_controller():
     # number_of_rounds = int(input("Entrez le nombre de tours: "))
     # new_tournament = Tournament(name, place, date, time_control, number_of_rounds)
 
-    new_tournament = Tournament("name", "place", date, time_control, 4)
+    new_tournament = Tournament(tournament_id, "name", "place", date, time_control, 4)
     # description = input("Entrez la description du tournoi: ")
     # new_tournament.description = description
     print(f"{date}")
@@ -305,7 +306,7 @@ def add_player_controller(tournament):
     gender = input("Entrez le sexe du joueur: ")
     new_player = Player(firstname, lastname, date_of_birth, gender)
     tournament.players.append(new_player)
-    # tournament.save()
+    # tournament.save(all_tournaments)
     print(f"Le joueur {firstname} {lastname} a bien été ajouté au tournoi.")
     players_controller(tournament)
 
@@ -397,7 +398,6 @@ def rounds_controller(tournament):
 
 
 def add_round_controller(tournament):
-    # Pas de début de tournoi si nombre pair a rajouter
     if len(tournament.players) % 2 != 0:
         print("Vous ne pouvez pas commencer de parties tant que le nombre de joueurs est impair.")
         selected_tournament_controller(tournament)
@@ -438,6 +438,13 @@ def add_round_controller(tournament):
             rounds_controller(tournament)
 
         elif len(tournament.rounds) > 1:
+            # last_round = tournament.rounds[-1]
+            # for match in last_round.matches:
+            #     if match.in_progress:
+            #         print("Le tour précédent n'est pas encore terminé")
+            #         print("Veuillez rentrez les scores de tous les matchs en cours avant de créer un nouveau tour.")
+            #         rounds_controller(tournament)
+            #     else:
             tournament.order_players_by_points_and_ranks()
 
             assigned_players = []
@@ -555,8 +562,8 @@ def ranking_controller(tournament):
 
 
 if __name__ == "__main__":
-    Tournoi1 = Tournament("Premier", "Ici", "Du 23/08/2022 au 23/08/2022", "Blitz", 6)
-    Tournoi2 = Tournament("Deuxième", "Là-bas", "Du 23/08/2022 au 23/08/2022", "Bullet", 4)
+    Tournoi1 = Tournament(1, "Premier", "Ici", "Du 23/08/2022 au 23/08/2022", "Blitz", 6)
+    Tournoi2 = Tournament(2, "Deuxième", "Là-bas", "Du 23/08/2022 au 23/08/2022", "Bullet", 4)
     Joueur1 = Player("Mario", "Super", datetime.strptime("01/01/2000", "%d/%m/%Y"), "M")
     Joueur2 = Player("Master", "Chief", datetime.strptime("02/02/2000", "%d/%m/%Y"), "M")
     Joueur3 = Player("Samus", "Metroid", datetime.strptime("03/03/2000", "%d/%m/%Y"), "F")
