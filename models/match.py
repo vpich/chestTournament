@@ -7,7 +7,7 @@ class Match:
     # - et un score
     def __init__(self, player_one, player_two):
         self.contestants = [player_one, player_two]
-        self.scores = []
+        self.scores = [0, 0]
         self.in_progress = True
         self.result = ()
 
@@ -33,8 +33,8 @@ class Match:
             score_player_two = 1
             self.contestants[1].total_points += score_player_two
 
-        self.scores.append(score_player_one)
-        self.scores.append(score_player_two)
+        self.scores[0] = score_player_one
+        self.scores[1] = score_player_two
 
         self.result = (self.contestants, self.scores)
         self.in_progress = False
