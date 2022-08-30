@@ -17,7 +17,7 @@ def delete_data():
 
 
 def load_data():
-    global player_one, player_two
+    global player_one, player_two, in_progress_bool
     file_to_load = input("Entrez le chemin du fichier à charger: ")
     db_file = TinyDB(file_to_load)
     table = db_file.table("_default")
@@ -56,7 +56,11 @@ def load_data():
                 new_match = Match(player_one, player_two)
                 new_match.contestants = [player_one, player_two]
                 new_match.scores = [float(match["ScorePlayer1"]), float(match["ScorePlayer2"])]
-                new_match.in_progress = match["InProgress"]
+                if match["InProgress"] == "True":
+                    in_progress_bool = True
+                elif match["InProgress"] == "False":
+                    in_progress_bool = False
+                new_match.in_progress = bool(in_progress_bool)
                 new_match.result = (new_match.contestants, new_match.scores)
                 new_round.add_match(new_match)
     print("Chargement terminé")
