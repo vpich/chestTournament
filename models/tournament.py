@@ -75,3 +75,20 @@ class Tournament:
             db.update(data_tournoi, query.id == f"{self.tournament_id}")
         else:
             db.insert(data_tournoi)
+
+    def get_players_history(self):
+        # example = {
+        #     "Sofien": ["Virginie", "Toto"],
+        #     "Virginie": ["Sofien", "Tata"],
+        #     "Toto": ["Sofien", "Tata"],
+        #     "Tata": ["Virginie", "Toto"]
+        # }
+
+        # to do: faire un id pour les players et l'utiliser ici
+        players_history = {player.firstname: [] for player in self.players}
+
+        for current_round in self.rounds:
+            for match in current_round.matches:
+                players_history[match.contestants[0].firstname].append(match.contestants[1])
+                players_history[match.contestants[1].firstname].append(match.contestants[0])
+        return players_history
