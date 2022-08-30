@@ -17,6 +17,7 @@ def delete_data():
 
 
 def load_data():
+    global player_one, player_two
     file_to_load = input("Entrez le chemin du fichier à charger: ")
     db_file = TinyDB(file_to_load)
     table = db_file.table("_default")
@@ -47,8 +48,13 @@ def load_data():
             for match in round["Matches"]:
                 player1 = match["Player1"]
                 player2 = match["Player2"]
-                new_match = Match(player1, player2)
-                new_match.contestants = [player1, player2]
+                for player in new_tournament.players:
+                    if str(player) == player1:
+                        player_one = player
+                    elif str(player) == player2:
+                        player_two = player
+                new_match = Match(player_one, player_two)
+                new_match.contestants = [player_one, player_two]
                 new_match.scores = [float(match["ScorePlayer1"]), float(match["ScorePlayer2"])]
                 new_match.in_progress = match["InProgress"]
                 new_match.result = (new_match.contestants, new_match.scores)
@@ -237,12 +243,7 @@ def delete_tournament_controller():
         tournaments_controller()
 
 
-players_history = {}
-
-
 def selected_tournament_controller(tournament):
-    for player in tournament.players:
-        players_history[player.firstname] = []
     selected_tournament_view()
     choice = input("Tapez 1, 2 ou 3: ")
 
@@ -474,8 +475,6 @@ def add_round_controller(tournament):
             i = 0
             for player_one in first_half:
                 player_two = second_half[i]
-                players_history[player_one.firstname].append(player_two)
-                players_history[player_two.firstname].append(player_one)
                 new_match = Match(player_one, player_two)
                 new_round.matches.append(new_match)
                 print(
@@ -484,17 +483,10 @@ def add_round_controller(tournament):
                 i += 1
 
             print("Premier tour créé")
-            print(players_history)
             rounds_controller(tournament)
 
         elif len(tournament.rounds) > 1:
-            # last_round = tournament.rounds[-1]
-            # for match in last_round.matches:
-            #     if match.in_progress:
-            #         print("Le tour précédent n'est pas encore terminé")
-            #         print("Veuillez rentrez les scores de tous les matchs en cours avant de créer un nouveau tour.")
-            #         rounds_controller(tournament)
-            #     else:
+            players_history = tournament.get_players_history()
             tournament.order_players_by_points_and_ranks()
 
             assigned_players = []
@@ -520,6 +512,7 @@ def add_round_controller(tournament):
                                 f"Le match joueur {player.firstname} contre joueur {other_player.firstname} a été ajouté au {new_round}"
                             )
                             break
+
             print(players_history)
             print("Fin de la création des matchs")
 
