@@ -1,5 +1,5 @@
 from datetime import datetime
-from tinydb import TinyDB, Query
+from tinydb import TinyDB
 
 from models import AllTournaments, Tournament, Player, Round, Match
 from views import tournaments_view, selected_tournament_view, players_view, matches_view, rounds_view
@@ -8,8 +8,53 @@ all_tournaments = AllTournaments()
 db = TinyDB("db.json")
 
 
-def load_data(tournaments):
-    pass
+def delete_data():
+    file_to_delete = input("Entrez le chemin du fichier à supprimer: ")
+    db_file = TinyDB(file_to_delete)
+    db_file.drop_table("_default")
+    print("Suppression terminée")
+    tournaments_controller()
+
+
+def load_data():
+    file_to_load = input("Entrez le chemin du fichier à charger: ")
+    db_file = TinyDB(file_to_load)
+    table = db_file.table("_default")
+    for tournament in table:
+        tournament_id = tournament["id"]
+        name = tournament["Name"]
+        place = tournament["Place"]
+        date = tournament["Date"]
+        time_control = tournament["TimeControl"]
+        # number_of_rounds = tournament["NumberOfRounds"]
+        new_tournament = Tournament(tournament_id, name, place, date, time_control)
+        # new_tournament.description = tournament["Description"]
+        all_tournaments.add_tournament(new_tournament)
+        for player in tournament["Players"]:
+            firstname = player["Firstname"]
+            lastname = player["Lastname"]
+            date_of_birth = player["DateOfBirth"]
+            gender = player["Gender"]
+            rank = int(player["Rank"])
+            total_points = float(player["TotalPoints"])
+            new_player = Player(firstname, lastname, date_of_birth, gender, rank)
+            new_player.total_points = total_points
+            new_tournament.add_players(new_player)
+        for round in tournament["Rounds"]:
+            name = round["Name"]
+            new_round = Round(name)
+            new_tournament.add_round(new_round)
+            for match in round["Matches"]:
+                player1 = match["Player1"]
+                player2 = match["Player2"]
+                new_match = Match(player1, player2)
+                new_match.contestants = [player1, player2]
+                new_match.scores = [float(match["ScorePlayer1"]), float(match["ScorePlayer2"])]
+                new_match.in_progress = match["InProgress"]
+                new_match.result = (new_match.contestants, new_match.scores)
+                new_round.add_match(new_match)
+    print("Chargement terminé")
+    tournaments_controller()
 
 
 def save_data(tournaments):
@@ -49,13 +94,18 @@ def tournaments_controller():
     if choice == 1:
         add_tournament_controller()
     elif choice == 2:
-        # show_tournaments_controller()
-        save_data(all_tournaments.tournaments)
+        show_tournaments_controller()
     elif choice == 3:
         manage_tournament_controller()
     elif choice == 4:
         delete_tournament_controller()
     elif choice == 5:
+        save_data(all_tournaments.tournaments)
+    elif choice == 6:
+        load_data()
+    elif choice == 7:
+        delete_data()
+    elif choice == 8:
         print("Vous quittez le programme.")
         exit()
     else:
@@ -562,29 +612,29 @@ def ranking_controller(tournament):
 
 
 if __name__ == "__main__":
-    Tournoi1 = Tournament(1, "Premier", "Ici", "Du 23/08/2022 au 23/08/2022", "Blitz", 6)
-    Tournoi2 = Tournament(2, "Deuxième", "Là-bas", "Du 23/08/2022 au 23/08/2022", "Bullet", 4)
-    Joueur1 = Player("Mario", "Super", datetime.strptime("01/01/2000", "%d/%m/%Y"), "M")
-    Joueur2 = Player("Master", "Chief", datetime.strptime("02/02/2000", "%d/%m/%Y"), "M")
-    Joueur3 = Player("Samus", "Metroid", datetime.strptime("03/03/2000", "%d/%m/%Y"), "F")
-    Joueur4 = Player("Chun", "Li", datetime.strptime("04/04/2000", "%d/%m/%Y"), "F")
-    Joueur5 = Player("Bruce", "Wayne", datetime.strptime("05/05/2000", "%d/%m/%Y"), "M")
-    Joueur6 = Player("Coco", "Pops", datetime.strptime("06/06/2000", "%d/%m/%Y"), "M")
-    Joueur7 = Player("Pizza", "Saumon", datetime.strptime("07/07/2000", "%d/%m/%Y"), "F")
-    Joueur8 = Player("Bonbon", "Cicaplast", datetime.strptime("08/08/2000", "%d/%m/%Y"), "F")
-    Tournoi1.players.append(Joueur1)
-    Tournoi1.players.append(Joueur2)
-    Tournoi1.players.append(Joueur3)
-    Tournoi1.players.append(Joueur4)
-    Tournoi1.players.append(Joueur5)
-    Tournoi1.players.append(Joueur6)
-    Tournoi1.players.append(Joueur7)
-    Tournoi1.players.append(Joueur8)
-    Joueur9 = Player("Clavier", "Souris", datetime.strptime("09/09/2000", "%d/%m/%Y"), "M")
-    Joueur10 = Player("Casque", "Ecran", datetime.strptime("10/10/2000", "%d/%m/%Y"), "F")
-    Tournoi2.players.append(Joueur9)
-    Tournoi2.players.append(Joueur10)
-    all_tournaments.add_tournament(Tournoi1)
-    all_tournaments.add_tournament(Tournoi2)
+    # Tournoi1 = Tournament(1, "Premier", "Ici", "Du 23/08/2022 au 23/08/2022", "Blitz", 6)
+    # Tournoi2 = Tournament(2, "Deuxième", "Là-bas", "Du 23/08/2022 au 23/08/2022", "Bullet", 4)
+    # Joueur1 = Player("Mario", "Super", datetime.strptime("01/01/2000", "%d/%m/%Y"), "M")
+    # Joueur2 = Player("Master", "Chief", datetime.strptime("02/02/2000", "%d/%m/%Y"), "M")
+    # Joueur3 = Player("Samus", "Metroid", datetime.strptime("03/03/2000", "%d/%m/%Y"), "F")
+    # Joueur4 = Player("Chun", "Li", datetime.strptime("04/04/2000", "%d/%m/%Y"), "F")
+    # Joueur5 = Player("Bruce", "Wayne", datetime.strptime("05/05/2000", "%d/%m/%Y"), "M")
+    # Joueur6 = Player("Coco", "Pops", datetime.strptime("06/06/2000", "%d/%m/%Y"), "M")
+    # Joueur7 = Player("Pizza", "Saumon", datetime.strptime("07/07/2000", "%d/%m/%Y"), "F")
+    # Joueur8 = Player("Bonbon", "Cicaplast", datetime.strptime("08/08/2000", "%d/%m/%Y"), "F")
+    # Tournoi1.players.append(Joueur1)
+    # Tournoi1.players.append(Joueur2)
+    # Tournoi1.players.append(Joueur3)
+    # Tournoi1.players.append(Joueur4)
+    # Tournoi1.players.append(Joueur5)
+    # Tournoi1.players.append(Joueur6)
+    # Tournoi1.players.append(Joueur7)
+    # Tournoi1.players.append(Joueur8)
+    # Joueur9 = Player("Clavier", "Souris", datetime.strptime("09/09/2000", "%d/%m/%Y"), "M")
+    # Joueur10 = Player("Casque", "Ecran", datetime.strptime("10/10/2000", "%d/%m/%Y"), "F")
+    # Tournoi2.players.append(Joueur9)
+    # Tournoi2.players.append(Joueur10)
+    # all_tournaments.add_tournament(Tournoi1)
+    # all_tournaments.add_tournament(Tournoi2)
 
     tournaments_controller()
