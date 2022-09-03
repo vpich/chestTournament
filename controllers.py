@@ -17,7 +17,7 @@ def delete_data():
 
 
 def load_data():
-    global player_one, player_two, in_progress_bool
+    # global player_one, player_two, in_progress_bool
     file_to_load = input("Entrez le chemin du fichier à charger: ")
     db_file = TinyDB(file_to_load)
     table = db_file.table("_default")
@@ -27,9 +27,9 @@ def load_data():
         place = tournament["Place"]
         date = tournament["Date"]
         time_control = tournament["TimeControl"]
-        # number_of_rounds = tournament["NumberOfRounds"]
-        new_tournament = Tournament(tournament_id, name, place, date, time_control)
-        # new_tournament.description = tournament["Description"]
+        number_of_rounds = int(tournament["NumberOfRounds"])
+        new_tournament = Tournament(tournament_id, name, place, date, time_control, number_of_rounds)
+        new_tournament.description = tournament["Description"]
         all_tournaments.add_tournament(new_tournament)
         for player in tournament["Players"]:
             firstname = player["Firstname"]
@@ -44,18 +44,26 @@ def load_data():
         for round in tournament["Rounds"]:
             name = round["Name"]
             new_round = Round(name)
+            new_round.start_time = round["StartTime"]
+            if round["EndTime"] == "None":
+                new_round.end_time = None
+            else:
+                new_round.end_time = round["EndTime"]
             new_tournament.add_round(new_round)
             for match in round["Matches"]:
                 player1 = match["Player1"]
                 player2 = match["Player2"]
+                contestants = []
                 for player in new_tournament.players:
                     if str(player) == player1:
-                        player_one = player
-                    elif str(player) == player2:
-                        player_two = player
-                new_match = Match(player_one, player_two)
-                new_match.contestants = [player_one, player_two]
+                        contestants.append(player)
+                    if str(player) == player2:
+                        contestants.append(player)
+                print(contestants)
+                new_match = Match(contestants[0], contestants[1])
+                # new_match.contestants = [contestants[0], contestants[1]]
                 new_match.scores = [float(match["ScorePlayer1"]), float(match["ScorePlayer2"])]
+                in_progress_bool = None
                 if match["InProgress"] == "True":
                     in_progress_bool = True
                 elif match["InProgress"] == "False":
@@ -126,7 +134,7 @@ def tournaments_controller():
 
 def manage_tournament_controller():
     #     print la liste des tournois avec chacun un numéro
-    if len(all_tournaments.tournaments) == 0:
+    if not all_tournaments.tournaments:
         print("Il n'y a aucun tounoi en cours")
         tournaments_controller()
     else:
@@ -336,7 +344,6 @@ def players_controller(tournament):
         players_controller(tournament)
 
     if choice == 1:
-        # il faut 8 joueurs
         add_player_controller(tournament)
     elif choice == 2:
         edit_player_controller(tournament)
@@ -350,92 +357,104 @@ def players_controller(tournament):
 
 
 def add_player_controller(tournament):
-    firstname = input("Entrez le prénom du joueur: ")
-    lastname = input("Entrez le nom de famille du joueur: ")
-    date_of_birth = check_date_format(
-        input("Entrez la date de naissance du joueur (format JJ/MM/AAAA): ")
-    )
-    if not date_of_birth:
-        print("La date de naissance est invalide, veuillez taper une date au format JJ/MM/AAAA")
-        add_player_controller(tournament)
-    gender = input("Entrez le sexe du joueur: ")
-    new_player = Player(firstname, lastname, date_of_birth, gender)
-    tournament.players.append(new_player)
-    # tournament.save(all_tournaments)
-    print(f"Le joueur {firstname} {lastname} a bien été ajouté au tournoi.")
-    players_controller(tournament)
-
-
-def edit_player_controller(tournament):
-    for i, player in enumerate(tournament.players):
-        print(f"{i + 1}/ Modifier {player}")
-    choice = input("Tapez le numéro du joueur à modifier: ")
-
-    if check_int_input(choice):
-        choice = int(choice) - 1
+    if len(tournament.players) >= 8:
+        print("Vous avez atteint le nombre maximal de 8 joueurs.")
+        players_controller(tournament)
     else:
-        edit_player_controller(tournament)
-
-    if choice > len(tournament.players):
-        print("Je n'ai pas compris votre choix.")
-        print(f"Veuillez saisir un chiffre compris entre 1 et {len(tournament.players)}")
-        edit_player_controller(tournament)
-
-    player_to_modify = tournament.players[choice]
-    print("Que souhaitez-vous modifier ?")
-    print("1/ Son prénom ?")
-    print("2/ Son nom de famille ?")
-    print("3/ Sa date de naissance ?")
-    print("4/ Son sexe ?")
-    print("5/ Son score ?")
-    choice = int(input("Tapez le numéro à modifier: "))
-    if choice == 1:
         firstname = input("Entrez le prénom du joueur: ")
-        player_to_modify.firstname = firstname
-    elif choice == 2:
         lastname = input("Entrez le nom de famille du joueur: ")
-        player_to_modify.lastname = lastname
-    elif choice == 3:
         date_of_birth = check_date_format(
-            input("Entrez la date de naissance du joueur: ")
+            input("Entrez la date de naissance du joueur (format JJ/MM/AAAA): ")
         )
         if not date_of_birth:
             print("La date de naissance est invalide, veuillez taper une date au format JJ/MM/AAAA")
-            edit_player_controller(tournament)
-        player_to_modify.date_of_birth = date_of_birth
-    elif choice == 4:
+            add_player_controller(tournament)
         gender = input("Entrez le sexe du joueur: ")
-        player_to_modify.gender = gender
-    elif choice == 5:
-        rank = int(input("Entrez le score du joueur: "))
-        player_to_modify.rank = rank
+        new_player = Player(firstname, lastname, date_of_birth, gender)
+        tournament.players.append(new_player)
+        # tournament.save(all_tournaments)
+        print(f"Le joueur {firstname} {lastname} a bien été ajouté au tournoi.")
+        players_controller(tournament)
+
+
+def edit_player_controller(tournament):
+    if not tournament.players:
+        print("Il n'y a aucun joueur d'enregistrés.")
+        players_controller(tournament)
     else:
-        return
-    print("La modification a été enregistrée.")
-    players_controller(tournament)
+        for i, player in enumerate(tournament.players):
+            print(f"{i + 1}/ Modifier {player}")
+        choice = input("Tapez le numéro du joueur à modifier: ")
+
+        if check_int_input(choice):
+            choice = int(choice) - 1
+        else:
+            edit_player_controller(tournament)
+
+        if choice > len(tournament.players):
+            print("Je n'ai pas compris votre choix.")
+            print(f"Veuillez saisir un chiffre compris entre 1 et {len(tournament.players)}")
+            edit_player_controller(tournament)
+
+        player_to_modify = tournament.players[choice]
+        print("Que souhaitez-vous modifier ?")
+        print("1/ Son prénom ?")
+        print("2/ Son nom de famille ?")
+        print("3/ Sa date de naissance ?")
+        print("4/ Son sexe ?")
+        print("5/ Son score ?")
+        choice = int(input("Tapez le numéro à modifier: "))
+        if choice == 1:
+            firstname = input("Entrez le prénom du joueur: ")
+            player_to_modify.firstname = firstname
+        elif choice == 2:
+            lastname = input("Entrez le nom de famille du joueur: ")
+            player_to_modify.lastname = lastname
+        elif choice == 3:
+            date_of_birth = check_date_format(
+                input("Entrez la date de naissance du joueur: ")
+            )
+            if not date_of_birth:
+                print("La date de naissance est invalide, veuillez taper une date au format JJ/MM/AAAA")
+                edit_player_controller(tournament)
+            player_to_modify.date_of_birth = date_of_birth
+        elif choice == 4:
+            gender = input("Entrez le sexe du joueur: ")
+            player_to_modify.gender = gender
+        elif choice == 5:
+            rank = int(input("Entrez le score du joueur: "))
+            player_to_modify.rank = rank
+        else:
+            return
+        print("La modification a été enregistrée.")
+        players_controller(tournament)
 
 
 def delete_player_controller(tournament):
-    for i, player in enumerate(tournament.players):
-        print(f"{i + 1}/ Supprimer {player} ?")
-    choice = input("Tapez le numéro du joueur à supprimer: ")
-
-    if check_int_input(choice):
-        choice = int(choice) - 1
+    if not tournament.players:
+        print("Il n'y a aucun joueur d'enregistrés.")
+        players_controller(tournament)
     else:
-        delete_player_controller(tournament)
+        for i, player in enumerate(tournament.players):
+            print(f"{i + 1}/ Supprimer {player} ?")
+        choice = input("Tapez le numéro du joueur à supprimer: ")
 
-    if choice > len(tournament.players):
-        print("Je n'ai pas compris votre choix.")
-        print(f"Veuillez saisir un chiffre compris entre 1 et {len(tournament.players)}")
-        delete_player_controller(tournament)
+        if check_int_input(choice):
+            choice = int(choice) - 1
+        else:
+            delete_player_controller(tournament)
 
-    player_to_delete = tournament.players[choice]
-    tournament.delete_player(player_to_delete)
-    print(
-        f"Le joueur {player_to_delete.firstname} {player_to_delete.lastname} a bien été supprimé."
-    )
-    players_controller(tournament)
+        if choice > len(tournament.players):
+            print("Je n'ai pas compris votre choix.")
+            print(f"Veuillez saisir un chiffre compris entre 1 et {len(tournament.players)}")
+            delete_player_controller(tournament)
+
+        player_to_delete = tournament.players[choice]
+        tournament.delete_player(player_to_delete)
+        print(
+            f"Le joueur {player_to_delete.firstname} {player_to_delete.lastname} a bien été supprimé."
+        )
+        players_controller(tournament)
 
 
 def rounds_controller(tournament):
@@ -449,13 +468,49 @@ def rounds_controller(tournament):
     elif choice == 3:
         edit_round_controller(tournament)
     elif choice == 4:
+        end_round_controller(tournament)
+    elif choice == 5:
         selected_tournament_controller(tournament)
+
+
+def end_round_controller(tournament):
+    if not tournament.rounds:
+        print("Il n'y a pas encore de tour créé dans ce tournoi.")
+        rounds_controller(tournament)
+    else:
+        for i, round in enumerate(tournament.rounds):
+            print(f"{i + 1}/ Clôturer {round}")
+        choice = check_int_input(input("Tapez le numéro du tour à clôturer: "))
+        if not choice:
+            rounds_controller(tournament)
+        round_chosen = int(choice)
+        round_to_end = tournament.rounds[round_chosen]
+        # last_round = tournament.rounds[round_chosen]
+        for match in round_to_end.matches:
+            if match.in_progress:
+                print("Vous ne pouvez pas clôturer ce tour, tant que les matchs ne sont pas terminés")
+                rounds_controller(tournament)
+        round_to_end.ending()
+        print(f"Le {round_to_end} a bien été clôturé.")
+        print("-----------------------")
+        rounds_controller(tournament)
 
 
 def add_round_controller(tournament):
-    if len(tournament.players) % 2 != 0:
-        print("Vous ne pouvez pas commencer de parties tant que le nombre de joueurs est impair.")
-        selected_tournament_controller(tournament)
+    # if (other_player != player
+    #         and other_player not in assigned_players
+    #         and other_player not in players_history[player.firstname]):
+    # if len(tournament.players) % 2 != 0:
+    #     print("Vous ne pouvez pas commencer de parties tant que le nombre de joueurs est impair.")
+    #     rounds_controller(tournament)
+    if tournament.rounds:
+        last_round = tournament.rounds[-1]
+        if not last_round.end_time:
+            print("Vous ne pouvez pas créé de nouveau tour, tant que le tour précédent n'est pas clôturé")
+            rounds_controller(tournament)
+    if len(tournament.players) != 8:
+        print("Vous ne pouvez pas commencer de parties tant que le nombre de joueurs est inférieur à 8.")
+        rounds_controller(tournament)
     else:
         # if len(tournament.rounds) == len(tournament.players) - 1:
         if len(tournament.rounds) >= tournament.number_of_rounds:
@@ -526,14 +581,18 @@ def add_round_controller(tournament):
 
 
 def delete_round_controller(tournament):
-    for i, round in enumerate(tournament.rounds):
-        print(f"{i + 1}/ Supprimer {round}")
-    choice = int(input("Tapez le numéro du tour à supprimer: ")) - 1
-    round_to_delete = tournament.rounds[choice]
-    tournament.delete_round(round_to_delete)
-    print(f"Le {round_to_delete} a bien été supprimé.")
-    print("-----------------------")
-    rounds_controller(tournament)
+    if not tournament.rounds:
+        print("Il n'y a pas encore de tour créé dans ce tournoi.")
+        rounds_controller(tournament)
+    else:
+        for i, round in enumerate(tournament.rounds):
+            print(f"{i + 1}/ Supprimer {round}")
+        choice = int(input("Tapez le numéro du tour à supprimer: ")) - 1
+        round_to_delete = tournament.rounds[choice]
+        tournament.delete_round(round_to_delete)
+        print(f"Le {round_to_delete} a bien été supprimé.")
+        print("-----------------------")
+        rounds_controller(tournament)
 
 
 def edit_round_controller(tournament):
