@@ -51,7 +51,9 @@ class Tournament:
                                      "ScorePlayer2": f"{match.scores[1]}",
                                      "InProgress": f"{match.in_progress}"})
             data_rounds.append({"Name": f"{round.name}",
-                                "Matches": data_matches})
+                                "Matches": data_matches,
+                                "StartTime": f'{round.start_time}',
+                                "EndTime": f'{round.end_time}'})
         data_players = []
         for player in self.players:
             data_players.append({"Firstname": f"{player.firstname}",
@@ -65,6 +67,7 @@ class Tournament:
                         "Place": f"{self.place}",
                         "Date": f"{self.date}",
                         "TimeControl": f"{self.time_control}",
+                        "NumberOfRounds": f"{self.number_of_rounds}",
                         "Rounds": data_rounds,
                         "Description": f"{self.description}",
                         "Players": data_players}
