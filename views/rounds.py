@@ -6,4 +6,5 @@ def rounds_view(tournament):
     print("1/ Commencer un nouveau tour ?")
     print("2/ Supprimer un tour ?")
     print("3/ Gérer un match dans un tour ?")
-    print("4/ Retour en arrière")
+    print("4/ Clôturer un tour ?")
+    print("5/ Retour en arrière")
