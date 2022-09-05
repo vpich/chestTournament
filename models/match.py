@@ -13,9 +13,11 @@ class Match:
 
     def __str__(self):
         if self.in_progress:
-            return f"Cette partie oppose {self.contestants[0]} à {self.contestants[1]}, la partie est en cours."
+            return f"Cette partie oppose {self.contestants[0]}" \
+                   f" à {self.contestants[1]}, la partie est en cours."
         else:
-            return f"Cette partie oppose {self.contestants[0]} à {self.contestants[1]}, la partie est terminée."
+            return f"Cette partie oppose {self.contestants[0]}" \
+                   f" à {self.contestants[1]}, la partie est terminée."
 
     def add_score_to_winner(self, winner: Player = None):
         score_player_one = 0

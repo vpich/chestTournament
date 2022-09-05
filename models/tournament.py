@@ -3,7 +3,8 @@ from tinydb import TinyDB, Query
 
 
 class Tournament:
-    def __init__(self, tournament_id, name, place, date, time_control, number_of_rounds: int = 4):
+    def __init__(self, tournament_id, name, place, date,
+                 time_control, number_of_rounds: int = 4):
         self.tournament_id = tournament_id
         self.name = name
         self.place = place
@@ -37,7 +38,9 @@ class Tournament:
         self.players.sort(key=lambda player: player.lastname)
 
     def order_players_by_points_and_ranks(self):
-        self.players.sort(reverse=True, key=lambda player: (player.total_points, player.rank))
+        self.players.sort(reverse=True,
+                          key=lambda player: (player.total_points,
+                                              player.rank))
 
     def save(self):
         db = TinyDB("db.json")
@@ -92,6 +95,9 @@ class Tournament:
 
         for current_round in self.rounds:
             for match in current_round.matches:
-                players_history[match.contestants[0].firstname].append(match.contestants[1])
-                players_history[match.contestants[1].firstname].append(match.contestants[0])
+                contestants = match.contestants
+                players_history[contestants[0].firstname].append(
+                    contestants[1])
+                players_history[contestants[1].firstname].append(
+                    contestants[0])
         return players_history
