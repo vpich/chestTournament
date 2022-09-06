@@ -1,6 +1,7 @@
 def ranking_controller(tournament):
-    print(f"Il y a actuellement {len(tournament.rounds)} tour(s) dans le tournoi {tournament}")
-    print(f"Voici le classement des joueurs pour ce tournoi:")
+    print(f"Il y a actuellement {len(tournament.rounds)} tour(s) "
+          f"dans le tournoi {tournament}")
+    print("Voici le classement des joueurs pour ce tournoi:")
     if not tournament.players:
         print("Il n'y a pas de joueurs qui participent à ce tournoi.")
     else:
