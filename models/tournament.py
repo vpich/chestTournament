@@ -59,7 +59,8 @@ class Tournament:
                                 "EndTime": f'{round.end_time}'})
         data_players = []
         for player in self.players:
-            data_players.append({"Firstname": f"{player.firstname}",
+            data_players.append({"PlayerId": f"{player.player_id}",
+                                 "Firstname": f"{player.firstname}",
                                  "Lastname": f"{player.lastname}",
                                  "Gender": f"{player.gender}",
                                  "DateOfBirth": f"{player.date_of_birth}",
@@ -83,21 +84,13 @@ class Tournament:
             db.insert(data_tournoi)
 
     def get_players_history(self):
-        # example = {
-        #     "Sofien": ["Virginie", "Toto"],
-        #     "Virginie": ["Sofien", "Tata"],
-        #     "Toto": ["Sofien", "Tata"],
-        #     "Tata": ["Virginie", "Toto"]
-        # }
-
-        # to do: faire un id pour les players et l'utiliser ici
-        players_history = {player.firstname: [] for player in self.players}
+        players_history = {player.player_id: [] for player in self.players}
 
         for current_round in self.rounds:
             for match in current_round.matches:
                 contestants = match.contestants
-                players_history[contestants[0].firstname].append(
+                players_history[contestants[0].player_id].append(
                     contestants[1])
-                players_history[contestants[1].firstname].append(
+                players_history[contestants[1].player_id].append(
                     contestants[0])
         return players_history
