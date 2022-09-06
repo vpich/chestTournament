@@ -30,7 +30,10 @@ tournois d'échecs, de les administrer, ainsi que leurs joueurs.
 
 ## Features
 
-- A compléter
+[comment]: <> (- A compléter et modifier les exclusions pour le rapport flake8)
+
+- pour générer le rapport flake8:
+  flake8 --format=html --htmldir=flake8_rapport --exclude env,.env,wip_controllers --max-line-length=119
 
 ## Author
 
