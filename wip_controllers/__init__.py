@@ -9,3 +9,4 @@ from .players import (
 from .ranking import ranking_controller
 from .tournaments import tournaments_controller, selected_tournament_controller
 from .rounds import rounds_controller
+from .crud_data import save_data, delete_data, load_data

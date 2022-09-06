@@ -1,6 +1,6 @@
-from controllers import check_int_input, check_date_format
 from views import players_view
 from models import Player
+from wip_controllers import check_int_input, check_date_format, selected_tournament_controller
 
 
 def players_controller(tournament):

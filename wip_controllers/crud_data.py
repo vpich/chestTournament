@@ -1,6 +1,7 @@
 from tinydb import TinyDB
 
 from models import AllTournaments, Tournament, Player, Round, Match
+from wip_controllers import tournaments_controller
 
 all_tournaments = AllTournaments()
 db = TinyDB("db.json")

@@ -1,6 +1,6 @@
-# from controllers import matches_controller, selected_tournament_controller
 from models import Round, Match
 from views import rounds_view
+from wip_controllers import check_int_input, selected_tournament_controller, matches_controller
 
 
 def rounds_controller(tournament):
