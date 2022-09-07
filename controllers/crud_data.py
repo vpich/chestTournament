@@ -1,7 +1,7 @@
 from tinydb import TinyDB
 
 from models import AllTournaments, Tournament, Player, Round, Match
-from wip_controllers import tournaments_controller
+from .tournaments import tournaments_controller
 
 all_tournaments = AllTournaments()
 db = TinyDB("db.json")
@@ -33,8 +33,9 @@ def load_data():
         date = tournament["Date"]
         time_control = tournament["TimeControl"]
         number_of_rounds = int(tournament["NumberOfRounds"])
-        new_tournament = Tournament(tournament_id, name, place,
-                                    date, time_control, number_of_rounds)
+        new_tournament = Tournament(
+            tournament_id, name, place, date, time_control, number_of_rounds
+        )
         new_tournament.description = tournament["Description"]
         all_tournaments.add_tournament(new_tournament)
         for player in tournament["Players"]:
@@ -45,8 +46,9 @@ def load_data():
             gender = player["Gender"]
             rank = int(player["Rank"])
             total_points = float(player["TotalPoints"])
-            new_player = Player(player_id, firstname, lastname,
-                                date_of_birth, gender, rank)
+            new_player = Player(
+                player_id, firstname, lastname, date_of_birth, gender, rank
+            )
             new_player.total_points = total_points
             new_tournament.add_players(new_player)
         for round in tournament["Rounds"]:
@@ -64,14 +66,18 @@ def load_data():
                 contestants = []
                 for player in new_tournament.players:
                     for other_player in new_tournament.players:
-                        if (other_player != player
+                        if (
+                                other_player != player
                                 and str(player) == player1
-                                and str(other_player) == player2):
+                                and str(other_player) == player2
+                        ):
                             contestants.append(player)
                             contestants.append(other_player)
                 new_match = Match(contestants[0], contestants[1])
-                new_match.scores = [float(match["ScorePlayer1"]),
-                                    float(match["ScorePlayer2"])]
+                new_match.scores = [
+                    float(match["ScorePlayer1"]),
+                    float(match["ScorePlayer2"]),
+                ]
                 in_progress_bool = None
                 if match["InProgress"] == "True":
                     in_progress_bool = True

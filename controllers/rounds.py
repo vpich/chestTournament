@@ -1,6 +1,8 @@
 from models import Round, Match
 from views import rounds_view
-from wip_controllers import check_int_input, selected_tournament_controller, matches_controller
+from .checks import check_int_input
+from .tournaments import selected_tournament_controller
+from .matches import matches_controller
 
 
 def rounds_controller(tournament):
@@ -34,8 +36,10 @@ def end_round_controller(tournament):
         # last_round = tournament.rounds[round_chosen]
         for match in round_to_end.matches:
             if match.in_progress:
-                print("Vous ne pouvez pas clôturer ce tour, "
-                      "tant que les matchs ne sont pas terminés")
+                print(
+                    "Vous ne pouvez pas clôturer ce tour, "
+                    "tant que les matchs ne sont pas terminés"
+                )
                 rounds_controller(tournament)
         round_to_end.ending()
         print(f"Le {round_to_end} a bien été clôturé.")
@@ -47,12 +51,16 @@ def add_round_controller(tournament):
     if tournament.rounds:
         last_round = tournament.rounds[-1]
         if not last_round.end_time:
-            print("Vous ne pouvez pas créé de nouveau tour, "
-                  "tant que le tour précédent n'est pas clôturé")
+            print(
+                "Vous ne pouvez pas créé de nouveau tour, "
+                "tant que le tour précédent n'est pas clôturé"
+            )
             rounds_controller(tournament)
     if len(tournament.players) != 8:
-        print("Vous ne pouvez pas commencer de parties "
-              "tant que le nombre de joueurs est inférieur à 8.")
+        print(
+            "Vous ne pouvez pas commencer de parties "
+            "tant que le nombre de joueurs est inférieur à 8."
+        )
         rounds_controller(tournament)
     else:
         if len(tournament.rounds) >= tournament.number_of_rounds:
@@ -104,18 +112,17 @@ def add_round_controller(tournament):
                         # - ce contestant potentiel n'a pas déjà un match
                         # dans ce round
                         # - le joueur n'a jamais joué avec lui
-                        if (other_player != player
+                        if (
+                                other_player != player
                                 and other_player not in assigned_players
-                                and other_player not in players_history[
-                                    player.player_id]):
+                                and other_player not in players_history[player.player_id]
+                        ):
                             new_match = Match(player, other_player)
                             new_round.matches.append(new_match)
                             assigned_players.append(player)
                             assigned_players.append(other_player)
-                            players_history[player.player_id].append(
-                                other_player)
-                            players_history[other_player.player_id].append(
-                                player)
+                            players_history[player.player_id].append(other_player)
+                            players_history[other_player.player_id].append(player)
                             print(
                                 f"Le match joueur {player.firstname} "
                                 f"contre joueur {other_player.firstname} "

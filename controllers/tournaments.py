@@ -1,17 +1,10 @@
 from datetime import datetime
 
 from models import AllTournaments, Tournament
-from views import tournaments_view, selected_tournament_view
-from controllers import (
-    check_int_input,
-    check_date_format,
-    ranking_controller,
-    players_controller,
-    save_data,
-    load_data,
-    delete_data,
-    rounds_controller,
-)
+from views import tournaments_view
+from .checks import check_int_input, check_date_format
+from .ranking import ranking_controller
+from .crud_data import save_data, load_data, delete_data
 
 all_tournaments = AllTournaments()
 
@@ -64,22 +57,27 @@ def manage_tournament_controller():
 
         if selected_tournament < 0:
             print("Je n'ai pas compris votre choix.")
-            print(f"Veuillez saisir un chiffre "
-                  f"entre 1 et {len(all_tournaments.tournaments)}.")
+            print(
+                f"Veuillez saisir un chiffre "
+                f"entre 1 et {len(all_tournaments.tournaments)}."
+            )
             manage_tournament_controller()
         elif selected_tournament >= len(all_tournaments.tournaments):
             print("Je n'ai pas compris votre choix.")
-            print(f"Veuillez saisir un chiffre "
-                  f"entre 1 et {len(all_tournaments.tournaments)}.")
+            print(
+                f"Veuillez saisir un chiffre "
+                f"entre 1 et {len(all_tournaments.tournaments)}."
+            )
             manage_tournament_controller()
 
-        selected_tournament_controller(
-            all_tournaments.tournaments[selected_tournament])
+        selected_tournament_controller(all_tournaments.tournaments[selected_tournament])
 
 
 def show_tournaments_controller():
-    print(f"Il y a actuellement "
-          f"{len(all_tournaments.tournaments)} tournoi(s) enregistré(s).")
+    print(
+        f"Il y a actuellement "
+        f"{len(all_tournaments.tournaments)} tournoi(s) enregistré(s)."
+    )
     for tournament in all_tournaments.tournaments:
         ranking_controller(tournament)
     tournaments_controller()
@@ -107,8 +105,10 @@ def time_control_selection():
         elif user_choice == 3:
             return time_control_choices[2]
         else:
-            print("Je n'ai pas compris votre choix. "
-                  "Veuillez taper un nombre entre 1 et 3.")
+            print(
+                "Je n'ai pas compris votre choix. "
+                "Veuillez taper un nombre entre 1 et 3."
+            )
             time_control_selection()
 
 
@@ -131,8 +131,7 @@ def add_tournament_controller():
         print("La date ne peut pas être antérieure à aujourd'hui.")
         add_tournament_controller()
     else:
-        date = f"Du {today.strftime('%d/%m/%Y')} " \
-               f"au {end_date.strftime('%d/%m/%Y')}"
+        date = f"Du {today.strftime('%d/%m/%Y')} " f"au {end_date.strftime('%d/%m/%Y')}"
 
     time_control = time_control_selection()
     number_of_rounds = input("Entrez le nombre de tours: ")
@@ -147,8 +146,9 @@ def add_tournament_controller():
     else:
         number_of_rounds = int(number_of_rounds)
 
-    new_tournament = Tournament(tournament_id, name, place,
-                                date, time_control, number_of_rounds)
+    new_tournament = Tournament(
+        tournament_id, name, place, date, time_control, number_of_rounds
+    )
     description = input("Entrez la description du tournoi: ")
     new_tournament.description = description
     print(f"{date}")
@@ -174,42 +174,16 @@ def delete_tournament_controller():
 
         if choice > len(all_tournaments.tournaments):
             print("Je n'ai pas compris votre choix.")
-            print(f"Veuillez saisir un chiffre compris "
-                  f"entre 1 et {len(all_tournaments.tournaments)}")
+            print(
+                f"Veuillez saisir un chiffre compris "
+                f"entre 1 et {len(all_tournaments.tournaments)}"
+            )
             delete_tournament_controller()
 
         tournament_to_delete = all_tournaments.tournaments[choice]
         all_tournaments.delete_tournament(tournament_to_delete)
-        print(
-            f"Le tournoi {tournament_to_delete.name} a bien été supprimé."
-        )
+        print(f"Le tournoi {tournament_to_delete.name} a bien été supprimé.")
         tournaments_controller()
-
-
-def selected_tournament_controller(tournament):
-    selected_tournament_view()
-    choice = input("Tapez 1, 2 ou 3: ")
-
-    if check_int_input(choice):
-        choice = int(choice)
-    else:
-        selected_tournament_controller(tournament)
-
-    if choice == 1:
-        edit_tournament_controller(tournament)
-    elif choice == 2:
-        players_controller(tournament)
-    elif choice == 3:
-        rounds_controller(tournament)
-    elif choice == 4:
-        ranking_controller(tournament)
-        selected_tournament_controller(tournament)
-    elif choice == 5:
-        tournaments_controller()
-    else:
-        print("Je n'ai pas compris votre choix.")
-        selected_tournament_controller(tournament)
-    print("-----------------")
 
 
 def edit_tournament_controller(tournament):
@@ -217,7 +191,8 @@ def edit_tournament_controller(tournament):
         f"Nom: {tournament.name}, Lieu: {tournament.place}, "
         f"Date(s): {tournament.date}, "
         f"Contrôle du temps: {tournament.time_control}, "
-        f"Nombre de tours: {tournament.number_of_rounds}")
+        f"Nombre de tours: {tournament.number_of_rounds}"
+    )
     print("Que souhaitez-vous modifier ?")
     print("1/ Le nom ?")
     print("2/ Le lieu ?")
@@ -235,8 +210,7 @@ def edit_tournament_controller(tournament):
             place = input("Entrez le lieu: ")
             tournament.place = place
         elif choice == 3:
-            end_date = check_date_format(
-                input("Entrez la date de fin de tournoi: "))
+            end_date = check_date_format(input("Entrez la date de fin de tournoi: "))
             today = datetime.date(datetime.now())
             if not end_date:
                 edit_tournament_controller(tournament)
@@ -244,8 +218,10 @@ def edit_tournament_controller(tournament):
                 print("La date ne peut pas être antérieure à aujourd'hui.")
                 edit_tournament_controller(tournament)
             else:
-                date = f"Du {today.strftime('%d/%m/%Y')} " \
-                       f"au {end_date.strftime('%d/%m/%Y')}"
+                date = (
+                    f"Du {today.strftime('%d/%m/%Y')} "
+                    f"au {end_date.strftime('%d/%m/%Y')}"
+                )
             tournament.date = date
         elif choice == 4:
             time_control = time_control_selection()

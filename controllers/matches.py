@@ -1,5 +1,5 @@
 from views import matches_view
-from wip_controllers import check_int_input
+from .checks import check_int_input
 
 
 def matches_controller(round):
@@ -19,12 +19,8 @@ def matches_controller(round):
 
 def update_winner(match_selected):
     print("Qui a gagné ?")
-    print(
-        f"1/ {match_selected.contestants[0]} ?"
-    )
-    print(
-        f"2/ {match_selected.contestants[1]} ?"
-    )
+    print(f"1/ {match_selected.contestants[0]} ?")
+    print(f"2/ {match_selected.contestants[1]} ?")
     print("3/ Il y a eu égalité.")
     winner = int(input("Tapez 1 ou 2 pour sélectionner le vainqueur: "))
     if winner == 1:
@@ -41,6 +37,5 @@ def update_winner(match_selected):
         )
     elif winner == 3:
         match_selected.add_score_to_winner(None)
-        print(f"{match_selected.scores[0]} point ajouté "
-              f"aux 2 joueurs")
+        print(f"{match_selected.scores[0]} point ajouté " f"aux 2 joueurs")
     print("------------------------")

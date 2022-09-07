@@ -1,6 +1,9 @@
 from views import players_view
 from models import Player
-from wip_controllers import check_int_input, check_date_format, selected_tournament_controller
+from .checks import (
+    check_int_input,
+    check_date_format)
+from .tournaments import selected_tournament_controller
 
 
 def players_controller(tournament):
@@ -38,19 +41,19 @@ def add_player_controller(tournament):
         firstname = input("Entrez le prénom du joueur: ")
         lastname = input("Entrez le nom de famille du joueur: ")
         date_of_birth = check_date_format(
-            input("Entrez la date de naissance du joueur "
-                  "(format JJ/MM/AAAA): ")
+            input("Entrez la date de naissance du joueur " "(format JJ/MM/AAAA): ")
         )
         if not date_of_birth:
-            print("La date de naissance est invalide, "
-                  "veuillez taper une date au format JJ/MM/AAAA")
+            print(
+                "La date de naissance est invalide, "
+                "veuillez taper une date au format JJ/MM/AAAA"
+            )
             add_player_controller(tournament)
         gender = input("Entrez le sexe du joueur: ")
         new_player = Player(player_id, firstname, lastname, date_of_birth, gender)
         tournament.players.append(new_player)
         # tournament.save(all_tournaments)
-        print(f"Le joueur {firstname} {lastname} "
-              f"a bien été ajouté au tournoi.")
+        print(f"Le joueur {firstname} {lastname} " f"a bien été ajouté au tournoi.")
         players_controller(tournament)
 
 
@@ -70,8 +73,10 @@ def edit_player_controller(tournament):
 
         if choice > len(tournament.players):
             print("Je n'ai pas compris votre choix.")
-            print(f"Veuillez saisir un chiffre compris "
-                  f"entre 1 et {len(tournament.players)}")
+            print(
+                f"Veuillez saisir un chiffre compris "
+                f"entre 1 et {len(tournament.players)}"
+            )
             edit_player_controller(tournament)
 
         player_to_modify = tournament.players[choice]
@@ -93,8 +98,10 @@ def edit_player_controller(tournament):
                 input("Entrez la date de naissance du joueur: ")
             )
             if not date_of_birth:
-                print("La date de naissance est invalide, "
-                      "veuillez taper une date au format JJ/MM/AAAA")
+                print(
+                    "La date de naissance est invalide, "
+                    "veuillez taper une date au format JJ/MM/AAAA"
+                )
                 edit_player_controller(tournament)
             player_to_modify.date_of_birth = date_of_birth
         elif choice == 4:
@@ -125,13 +132,13 @@ def delete_player_controller(tournament):
 
         if choice > len(tournament.players):
             print("Je n'ai pas compris votre choix.")
-            print(f"Veuillez saisir un chiffre compris "
-                  f"entre 1 et {len(tournament.players)}")
+            print(
+                f"Veuillez saisir un chiffre compris "
+                f"entre 1 et {len(tournament.players)}"
+            )
             delete_player_controller(tournament)
 
         player_to_delete = tournament.players[choice]
         tournament.delete_player(player_to_delete)
-        print(
-            f"Le {player_to_delete} a bien été supprimé."
-        )
+        print(f"Le {player_to_delete} a bien été supprimé.")
         players_controller(tournament)
