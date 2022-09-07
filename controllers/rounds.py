@@ -1,7 +1,8 @@
 from models import Round, Match
 from views import rounds_view
-from .checks import check_int_input
-from .tournaments import selected_tournament_controller
+from .checks import check_int_input, check_deletion
+from . import selected_tournament
+# from .tournaments import selected_tournament_controller
 from .matches import matches_controller
 
 
@@ -23,7 +24,7 @@ def rounds_controller(tournament):
     elif choice == 4:
         end_round_controller(tournament)
     elif choice == 5:
-        selected_tournament_controller(tournament)
+        selected_tournament.selected_tournament_controller(tournament)
 
 
 def end_round_controller(tournament):
@@ -149,8 +150,8 @@ def delete_round_controller(tournament):
         print("Il n'y a pas encore de tour créé dans ce tournoi.")
         rounds_controller(tournament)
     else:
-        for i, round in enumerate(tournament.rounds):
-            print(f"{i + 1}/ Supprimer {round}")
+        for i, tournament_round in enumerate(tournament.rounds):
+            print(f"{i + 1}/ Supprimer {tournament_round}")
         print(f"{len(tournament.rounds) + 1}/ Retour en arrière")
         choice = input("Tapez le numéro du tour à supprimer: ")
         if not check_int_input(choice):

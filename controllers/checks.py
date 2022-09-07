@@ -20,7 +20,7 @@ def check_date_format(user_input):
 
 
 def check_deletion():
-    print("Toute suppression est irrésersible.")
+    print("Toute suppression est irréversible.")
     choice = input("Souhaitez-vous vraiment effectuer la suppression ? (y/n)")
     if choice == "y":
         return True

@@ -1,7 +1,9 @@
 from tinydb import TinyDB
 
 from models import AllTournaments, Tournament, Player, Round, Match
-from .tournaments import tournaments_controller
+from .checks import check_deletion
+
+# from .tournaments import tournaments_controller
 
 all_tournaments = AllTournaments()
 db = TinyDB("db.json")
@@ -54,16 +56,16 @@ def load_data():
             )
             new_player.total_points = total_points
             new_tournament.add_players(new_player)
-        for round in tournament["Rounds"]:
-            name = round["Name"]
+        for tournament_round in tournament["Rounds"]:
+            name = tournament_round["Name"]
             new_round = Round(name)
-            new_round.start_time = round["StartTime"]
-            if round["EndTime"] == "None":
+            new_round.start_time = tournament_round["StartTime"]
+            if tournament_round["EndTime"] == "None":
                 new_round.end_time = None
             else:
-                new_round.end_time = round["EndTime"]
+                new_round.end_time = tournament_round["EndTime"]
             new_tournament.add_round(new_round)
-            for match in round["Matches"]:
+            for match in tournament_round["Matches"]:
                 player1 = match["Player1"]
                 player2 = match["Player2"]
                 contestants = []

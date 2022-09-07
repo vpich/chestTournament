@@ -1,9 +1,16 @@
+from datetime import datetime
+
 from views import selected_tournament_view
-from .checks import check_int_input
+from .checks import check_int_input, check_date_format
 from .ranking import ranking_controller
-from .players import players_controller
+from . import players
+# from .players import players_controller
 from .rounds import rounds_controller
-from .tournaments import tournaments_controller
+from .time_control import time_control_selection
+from . import tournaments
+
+
+# from .tournaments import tournaments_controller
 
 
 def selected_tournament_controller(tournament):
@@ -18,14 +25,14 @@ def selected_tournament_controller(tournament):
     if choice == 1:
         edit_selected_tournament_controller(tournament)
     elif choice == 2:
-        players_controller(tournament)
+        players.players_controller(tournament)
     elif choice == 3:
         rounds_controller(tournament)
     elif choice == 4:
         ranking_controller(tournament)
         selected_tournament_controller(tournament)
     elif choice == 5:
-        tournaments_controller()
+        tournaments.tournaments_controller()
     else:
         print("Je n'ai pas compris votre choix.")
         selected_tournament_controller(tournament)

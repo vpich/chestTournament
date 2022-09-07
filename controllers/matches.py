@@ -2,19 +2,19 @@ from views import matches_view
 from .checks import check_int_input
 
 
-def matches_controller(round):
-    matches_view(round)
+def matches_controller(tournament_round):
+    matches_view(tournament_round)
     match_selected = input("Tapez le numéro du match à mettre à jour: ")
     if not check_int_input(match_selected):
         print("Je n'ai pas compris votre choix.")
-        matches_controller(round)
+        matches_controller(tournament_round)
     else:
         match_selected = int(match_selected) - 1
-        if match_selected < len(round.matches):
-            update_winner(round.matches[match_selected])
+        if match_selected < len(tournament_round.matches):
+            update_winner(tournament_round.matches[match_selected])
         else:
             print("Je n'ai pas compris votre choix.")
-            matches_controller(round)
+            matches_controller(tournament_round)
 
 
 def update_winner(match_selected):

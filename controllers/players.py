@@ -2,7 +2,7 @@ from views import players_view
 from models import Player
 from .checks import (
     check_int_input,
-    check_date_format)
+    check_date_format, check_deletion)
 from .tournaments import selected_tournament_controller
 
 
