@@ -19,23 +19,33 @@ def matches_controller(round):
 
 def update_winner(match_selected):
     print("Qui a gagné ?")
-    print(f"1/ {match_selected.contestants[0]} ?")
-    print(f"2/ {match_selected.contestants[1]} ?")
+    print(f"1/ {match_selected.contestants[0]}")
+    print(f"2/ {match_selected.contestants[1]}")
     print("3/ Il y a eu égalité.")
-    winner = int(input("Tapez 1 ou 2 pour sélectionner le vainqueur: "))
-    if winner == 1:
-        match_selected.add_score_to_winner(match_selected.contestants[0])
-        print(
-            f"{match_selected.scores[0]} point ajouté "
-            f"au {match_selected.contestants[0]}"
-        )
-    elif winner == 2:
-        match_selected.add_score_to_winner(match_selected.contestants[1])
-        print(
-            f"{match_selected.scores[1]} point ajouté "
-            f"au {match_selected.contestants[1]}"
-        )
-    elif winner == 3:
-        match_selected.add_score_to_winner(None)
-        print(f"{match_selected.scores[0]} point ajouté " f"aux 2 joueurs")
-    print("------------------------")
+    print("4/ Retour en arrière")
+    winner = input("Tapez le nombre du choix à sélectionner: ")
+    if not check_int_input(winner):
+        print("Je n'ai pas comprix votre choix.")
+        update_winner(match_selected)
+    else:
+        winner = int(winner)
+        if winner == 1:
+            match_selected.add_score_to_winner(match_selected.contestants[0])
+            print(
+                f"{match_selected.scores[0]} point ajouté "
+                f"au {match_selected.contestants[0]}"
+            )
+        elif winner == 2:
+            match_selected.add_score_to_winner(match_selected.contestants[1])
+            print(
+                f"{match_selected.scores[1]} point ajouté "
+                f"au {match_selected.contestants[1]}"
+            )
+        elif winner == 3:
+            match_selected.add_score_to_winner(None)
+            print(f"{match_selected.scores[0]} point ajouté aux 2 joueurs")
+        elif winner == 4:
+            pass
+        else:
+            print("Je n'ai pas compris votre choix.")
+            update_winner(match_selected)

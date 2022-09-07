@@ -17,3 +17,15 @@ def check_date_format(user_input):
     except ValueError:
         print("Format de date invalide.")
         return False
+
+
+def check_deletion():
+    print("Toute suppression est irrésersible.")
+    choice = input("Souhaitez-vous vraiment effectuer la suppression ? (y/n)")
+    if choice == "y":
+        return True
+    elif choice == "n":
+        return False
+    else:
+        print("Je n'ai pas compris votre choix.")
+        check_deletion()

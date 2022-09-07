@@ -10,21 +10,24 @@ db = TinyDB("db.json")
 def save_data(tournaments):
     for tournament in tournaments:
         tournament.save()
-    print("Enregistrement terminé.")
+    print("Enregistrement dans le fichier db.json terminé.")
     tournaments_controller()
 
 
 def delete_data():
-    file_to_delete = input("Entrez le chemin du fichier à supprimer: ")
-    db_file = TinyDB(file_to_delete)
-    db_file.drop_table("_default")
-    print("Suppression terminée")
-    tournaments_controller()
+    # file_to_delete = input("Entrez le chemin du fichier à supprimer: ")
+    if check_deletion():
+        db_file = TinyDB("db.json")
+        db_file.drop_table("_default")
+        print("Suppression de tous les tournois du fichier db.json terminée")
+        tournaments_controller()
+    else:
+        tournaments_controller()
 
 
 def load_data():
-    file_to_load = input("Entrez le chemin du fichier à charger: ")
-    db_file = TinyDB(file_to_load)
+    # file_to_load = input("Entrez le chemin du fichier à charger: ")
+    db_file = TinyDB("db.json")
     table = db_file.table("_default")
     for tournament in table:
         tournament_id = tournament["id"]
@@ -86,5 +89,5 @@ def load_data():
                 new_match.in_progress = bool(in_progress_bool)
                 new_match.result = (new_match.contestants, new_match.scores)
                 new_round.add_match(new_match)
-    print("Chargement terminé")
-    tournaments_controller()
+    print("Chargement du fichier db.json terminé.")
+    # tournaments_controller()

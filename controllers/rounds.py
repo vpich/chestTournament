@@ -7,7 +7,12 @@ from .matches import matches_controller
 
 def rounds_controller(tournament):
     rounds_view(tournament)
-    choice = int(input("Tapez le nombre souhaité: "))
+    choice = input("Tapez le nombre du choix à sélectionner: ")
+
+    if check_int_input(choice):
+        choice = int(choice)
+    else:
+        rounds_controller(tournament)
 
     if choice == 1:
         add_round_controller(tournament)
@@ -26,13 +31,14 @@ def end_round_controller(tournament):
         print("Il n'y a pas encore de tour créé dans ce tournoi.")
         rounds_controller(tournament)
     else:
-        for i, round in enumerate(tournament.rounds):
-            print(f"{i + 1}/ Clôturer {round}")
-        choice = check_int_input(input("Tapez le numéro du tour à clôturer: "))
-        if not choice:
-            rounds_controller(tournament)
-        round_chosen = int(choice) - 1
-        round_to_end = tournament.rounds[round_chosen]
+        # for i, round in enumerate(tournament.rounds):
+        #     print(f"{i + 1}/ Clôturer {round}")
+        # choice = input("Tapez le numéro du tour à clôturer: ")
+        # if not check_int_input(choice):
+        #     rounds_controller(tournament)
+        # round_chosen = int(choice) - 1
+        # round_to_end = tournament.rounds[round_chosen]
+        round_to_end = tournament.rounds[-1]
         # last_round = tournament.rounds[round_chosen]
         for match in round_to_end.matches:
             if match.in_progress:
@@ -43,7 +49,7 @@ def end_round_controller(tournament):
                 rounds_controller(tournament)
         round_to_end.ending()
         print(f"Le {round_to_end} a bien été clôturé.")
-        print("-----------------------")
+        # save_data(all_tournaments.tournaments)
         rounds_controller(tournament)
 
 
@@ -94,6 +100,7 @@ def add_round_controller(tournament):
                 )
                 i += 1
 
+            # save_data(all_tournaments.tournaments)
             print("Premier tour créé")
             rounds_controller(tournament)
 
@@ -130,11 +137,10 @@ def add_round_controller(tournament):
                             )
                             break
 
-            print(players_history)
+            # save_data(all_tournaments.tournaments)
             print("Fin de la création des matchs")
 
             print(f"Le {new_round} a été créé.")
-            print("------------------")
             rounds_controller(tournament)
 
 
@@ -145,12 +151,26 @@ def delete_round_controller(tournament):
     else:
         for i, round in enumerate(tournament.rounds):
             print(f"{i + 1}/ Supprimer {round}")
-        choice = int(input("Tapez le numéro du tour à supprimer: ")) - 1
-        round_to_delete = tournament.rounds[choice]
-        tournament.delete_round(round_to_delete)
-        print(f"Le {round_to_delete} a bien été supprimé.")
-        print("-----------------------")
-        rounds_controller(tournament)
+        print(f"{len(tournament.rounds) + 1}/ Retour en arrière")
+        choice = input("Tapez le numéro du tour à supprimer: ")
+        if not check_int_input(choice):
+            delete_round_controller(tournament)
+        else:
+            choice = int(choice) - 1
+            if choice == len(tournament.rounds):
+                rounds_controller(tournament)
+            elif choice > len(tournament.rounds):
+                print("Je n'ai pas compris votre choix.")
+                delete_round_controller(tournament)
+            if check_deletion():
+                round_to_delete = tournament.rounds[choice]
+                tournament.delete_round(round_to_delete)
+                # save_data(all_tournaments.tournaments)
+                print(f"Le {round_to_delete} a bien été supprimé.")
+                print("-----------------------")
+                rounds_controller(tournament)
+            else:
+                rounds_controller(tournament)
 
 
 def edit_round_controller(tournament):
@@ -158,13 +178,14 @@ def edit_round_controller(tournament):
         print("Il n'y a pas encore de tour créé dans ce tournoi.")
         rounds_controller(tournament)
     else:
-        print("Quel tour souhaitez vous modifier ?")
-        for i, round in enumerate(tournament.rounds):
-            print(f"{i + 1}/ {round} ?")
-        choice = input("Tapez le numéro du tour à sélectionner: ")
-        if not check_int_input(choice):
-            print("Je n'ai pas compris votre choix.")
-            edit_round_controller(tournament)
-        else:
-            matches_controller(tournament.rounds[int(choice) - 1])
-            rounds_controller(tournament)
+        # print("Quel tour souhaitez vous modifier ?")
+        # for i, round in enumerate(tournament.rounds):
+        #     print(f"{i + 1}/ {round} ?")
+        # choice = input("Tapez le numéro du tour à sélectionner: ")
+        # if not check_int_input(choice):
+        #     print("Je n'ai pas compris votre choix.")
+        #     edit_round_controller(tournament)
+        # else:
+        matches_controller(tournament.rounds[-1])
+        # save_data(all_tournaments.tournaments)
+        rounds_controller(tournament)
