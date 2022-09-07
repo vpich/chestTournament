@@ -8,7 +8,7 @@ from .tournaments import edit_tournament_controller, tournaments_controller
 
 def selected_tournament_controller(tournament):
     selected_tournament_view()
-    choice = input("Tapez 1, 2 ou 3: ")
+    choice = input("Tapez le nombre du choix à sélectionner: ")
 
     if check_int_input(choice):
         choice = int(choice)
