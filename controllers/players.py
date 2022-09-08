@@ -3,7 +3,10 @@ from models import Player
 from .checks import (
     check_int_input,
     check_date_format, check_deletion)
-from .tournaments import selected_tournament_controller
+from . import selected_tournament
+
+
+# from .tournaments import selected_tournament_controller
 
 
 def players_controller(tournament):
@@ -22,7 +25,7 @@ def players_controller(tournament):
     elif choice == 3:
         delete_player_controller(tournament)
     elif choice == 4:
-        selected_tournament_controller(tournament)
+        selected_tournament.selected_tournament_controller(tournament)
     else:
         print("Je n'ai pas compris votre choix")
         players_controller(tournament)

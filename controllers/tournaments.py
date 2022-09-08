@@ -4,7 +4,8 @@ from models import AllTournaments, Tournament
 from views import tournaments_view
 from .checks import check_int_input, check_date_format, check_deletion
 from .ranking import ranking_controller
-from .crud_data import save_data, load_data, delete_data
+from . import crud_data
+# from .crud_data import save_data, load_data, delete_data
 from .selected_tournament import selected_tournament_controller
 from .time_control import time_control_selection
 
@@ -29,14 +30,14 @@ def tournaments_controller():
     elif choice == 4:
         delete_tournament_controller()
     elif choice == 5:
-        delete_data()
+        crud_data.delete_data()
     elif choice == 6:
         print("Vous quittez le programme.")
         exit()
     elif choice == 7:
-        save_data(all_tournaments.tournaments)
+        crud_data.save_data(all_tournaments.tournaments)
     elif choice == 8:
-        load_data()
+        crud_data.load_data()
     else:
         print("Je n'ai pas compris votre choix.")
         tournaments_controller()
