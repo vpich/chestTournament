@@ -1,9 +1,9 @@
-def selected_tournament_view():
-    print("Gestion du tournoi en cours")
+def selected_tournament_view(tournament_name):
     print("--------------")
+    print(f"Menu de gestion du tournoi {tournament_name}")
     print("Que souhaitez-vous faire ?")
-    print("1/ Modifier les informations du tournoi ?")
-    print("2/ Gérer les joueurs ?")
-    print("3/ Gérer les rounds ?")
-    print("4/ Afficher le classement des joueurs ?")
-    print("5/ Retour en arrière")
+    print("--------------")
+    print("1/ Modifier les informations du tournoi")
+    print("2/ Gérer les joueurs")
+    print("3/ Gérer les rounds")
+    print("4/ Retour en arrière")

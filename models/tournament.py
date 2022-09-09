@@ -18,7 +18,7 @@ class Tournament:
         self.description = ""
 
     def __str__(self):
-        return f"Tournoi {self.name}"
+        return f"{self.name}"
 
     def add_players(self, player):
         assert type(player) == Player

@@ -2,13 +2,14 @@ from models import Round, Match
 from views import rounds_view
 from .checks import check_int_input, check_deletion
 from . import selected_tournament
-# from .tournaments import selected_tournament_controller
 from .matches import matches_controller
 
 
 def rounds_controller(tournament):
     rounds_view(tournament)
+    print("--------------")
     choice = input("Tapez le nombre du choix à sélectionner: ")
+    print("--------------")
 
     if check_int_input(choice):
         choice = int(choice)
@@ -29,18 +30,12 @@ def rounds_controller(tournament):
 
 def end_round_controller(tournament):
     if not tournament.rounds:
+        print("--------------")
         print("Il n'y a pas encore de tour créé dans ce tournoi.")
+        print("--------------")
         rounds_controller(tournament)
     else:
-        # for i, round in enumerate(tournament.rounds):
-        #     print(f"{i + 1}/ Clôturer {round}")
-        # choice = input("Tapez le numéro du tour à clôturer: ")
-        # if not check_int_input(choice):
-        #     rounds_controller(tournament)
-        # round_chosen = int(choice) - 1
-        # round_to_end = tournament.rounds[round_chosen]
         round_to_end = tournament.rounds[-1]
-        # last_round = tournament.rounds[round_chosen]
         for match in round_to_end.matches:
             if match.in_progress:
                 print(
@@ -58,16 +53,20 @@ def add_round_controller(tournament):
     if tournament.rounds:
         last_round = tournament.rounds[-1]
         if not last_round.end_time:
+            print("--------------")
             print(
                 "Vous ne pouvez pas créé de nouveau tour, "
                 "tant que le tour précédent n'est pas clôturé"
             )
+            print("--------------")
             rounds_controller(tournament)
     if len(tournament.players) != 8:
+        print("--------------")
         print(
             "Vous ne pouvez pas commencer de parties "
             "tant que le nombre de joueurs est inférieur à 8."
         )
+        print("--------------")
         rounds_controller(tournament)
     else:
         if len(tournament.rounds) >= tournament.number_of_rounds:
@@ -75,7 +74,7 @@ def add_round_controller(tournament):
                 "Vous avez atteint la limite du nombre de tours, "
                 "le tournoi est déjà terminé."
             )
-            selected_tournament_controller(tournament)
+            selected_tournament.selected_tournament_controller(tournament)
 
         new_round_number = len(tournament.rounds) + 1
         new_round_name = f"Tour {new_round_number}"

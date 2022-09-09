@@ -2,19 +2,14 @@ from datetime import datetime
 
 from views import selected_tournament_view
 from .checks import check_int_input, check_date_format
-from .ranking import ranking_controller
 from . import players
-# from .players import players_controller
 from .rounds import rounds_controller
 from .time_control import time_control_selection
 from . import tournaments
 
 
-# from .tournaments import tournaments_controller
-
-
 def selected_tournament_controller(tournament):
-    selected_tournament_view()
+    selected_tournament_view(tournament)
     choice = input("Tapez le numéro du choix à sélectionner: ")
 
     if check_int_input(choice):
@@ -29,9 +24,6 @@ def selected_tournament_controller(tournament):
     elif choice == 3:
         rounds_controller(tournament)
     elif choice == 4:
-        ranking_controller(tournament)
-        selected_tournament_controller(tournament)
-    elif choice == 5:
         tournaments.tournaments_controller()
     else:
         print("Je n'ai pas compris votre choix.")
@@ -40,13 +32,17 @@ def selected_tournament_controller(tournament):
 
 
 def edit_selected_tournament_controller(tournament):
+    print("--------------")
+    print("Voici les informations actuelles du tournoi:")
     print(
         f"Nom: {tournament.name}, Lieu: {tournament.place}, "
         f"Date(s): {tournament.date}, "
         f"Contrôle du temps: {tournament.time_control}, "
         f"Nombre de tours: {tournament.number_of_rounds}"
     )
+    print("--------------")
     print("Que souhaitez-vous modifier ?")
+    print("--------------")
     print("1/ Le nom")
     print("2/ Le lieu")
     print("3/ Les dates")
@@ -63,16 +59,18 @@ def edit_selected_tournament_controller(tournament):
             place = input("Entrez le lieu: ")
             tournament.place = place
         elif choice == 3:
+            start_date = check_date_format(input("Entrez la date de début de tournoi: "))
+            if not start_date:
+                edit_selected_tournament_controller(tournament)
             end_date = check_date_format(input("Entrez la date de fin de tournoi: "))
-            today = datetime.date(datetime.now())
             if not end_date:
                 edit_selected_tournament_controller(tournament)
-            if end_date < today:
-                print("La date ne peut pas être antérieure à aujourd'hui.")
+            if end_date < start_date:
+                print("La date ne peut pas être antérieure à la date de début.")
                 edit_selected_tournament_controller(tournament)
             else:
                 date = (
-                    f"Du {today.strftime('%d/%m/%Y')} "
+                    f"Du {start_date.strftime('%d/%m/%Y')} "
                     f"au {end_date.strftime('%d/%m/%Y')}"
                 )
             tournament.date = date

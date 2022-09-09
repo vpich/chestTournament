@@ -1,6 +1,6 @@
-def welcome_view():
+def quit_view():
     print("")
     print("*******************************")
-    print("Bienvenue dans ce programme de gestion de tournoi d'échec")
+    print("Vous avez quitté le programme.")
     print("*******************************")
     print("")

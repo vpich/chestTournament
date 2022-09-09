@@ -13,4 +13,4 @@ class Player:
         self.total_points = 0
 
     def __str__(self):
-        return f"Joueur {self.firstname} {self.lastname}"
+        return f"{self.firstname} {self.lastname}"

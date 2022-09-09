@@ -3,10 +3,8 @@ from models import Player
 from .checks import (
     check_int_input,
     check_date_format, check_deletion)
+from .ranking import ranking_controller, filter_players_by_name
 from . import selected_tournament
-
-
-# from .tournaments import selected_tournament_controller
 
 
 def players_controller(tournament):
@@ -25,6 +23,12 @@ def players_controller(tournament):
     elif choice == 3:
         delete_player_controller(tournament)
     elif choice == 4:
+        ranking_controller(tournament)
+        players_controller(tournament)
+    elif choice == 5:
+        filter_players_by_name(tournament)
+        players_controller(tournament)
+    elif choice == 6:
         selected_tournament.selected_tournament_controller(tournament)
     else:
         print("Je n'ai pas compris votre choix")
@@ -61,9 +65,14 @@ def add_player_controller(tournament):
 
 def edit_player_controller(tournament):
     if not tournament.players:
+        print("--------------")
         print("Il n'y a aucun joueur d'enregistrés.")
+        print("--------------")
         players_controller(tournament)
     else:
+        print("--------------")
+        print("Pour quel joueur souhaitez-vous modifier les informations ?")
+        print("--------------")
         for i, player in enumerate(tournament.players):
             print(f"{i + 1}/ Modifier {player}")
         choice = input("Tapez le numéro du joueur à modifier: ")
@@ -82,7 +91,10 @@ def edit_player_controller(tournament):
             edit_player_controller(tournament)
 
         player_to_modify = tournament.players[choice]
+        print("--------------")
+        print(f"Vous allez éditer les informations de {player_to_modify}")
         print("Que souhaitez-vous modifier ?")
+        print("--------------")
         print("1/ Son prénom")
         print("2/ Son nom de famille")
         print("3/ Sa date de naissance")
@@ -129,9 +141,14 @@ def edit_player_controller(tournament):
 
 def delete_player_controller(tournament):
     if not tournament.players:
+        print("--------------")
         print("Il n'y a aucun joueur d'enregistré.")
+        print("--------------")
         players_controller(tournament)
     else:
+        print("--------------")
+        print("Quel joueur souhaitez-vous supprimer du tournoi ?")
+        print("--------------")
         for i, player in enumerate(tournament.players):
             print(f"{i + 1}/ Supprimer {player} ?")
         print(f"{len(tournament.players) + 1}/ Retour en arrière")

@@ -1,11 +1,10 @@
 from datetime import datetime
 
 from models import AllTournaments, Tournament
-from views import tournaments_view
+from views import tournaments_view, quit_view
 from .checks import check_int_input, check_date_format, check_deletion
 from .ranking import ranking_controller
 from . import crud_data
-# from .crud_data import save_data, load_data, delete_data
 from .selected_tournament import selected_tournament_controller
 from .time_control import time_control_selection
 
@@ -32,12 +31,12 @@ def tournaments_controller():
     elif choice == 5:
         crud_data.delete_data()
     elif choice == 6:
-        print("Vous quittez le programme.")
+        quit_view()
         exit()
-    elif choice == 7:
-        crud_data.save_data(all_tournaments.tournaments)
-    elif choice == 8:
-        crud_data.load_data()
+    # elif choice == 7:
+    #     crud_data.save_data(all_tournaments.tournaments)
+    # elif choice == 8:
+    #     crud_data.load_data()
     else:
         print("Je n'ai pas compris votre choix.")
         tournaments_controller()
@@ -46,10 +45,14 @@ def tournaments_controller():
 
 def manage_tournament_controller():
     if not all_tournaments.tournaments:
+        print("-----------")
         print("Il n'y a aucun tounoi en cours")
+        print("-----------")
         tournaments_controller()
     else:
+        print("-----------")
         print("Quel tournoi souhaitez-vous modifier ?")
+        print("-----------")
         for i, tournament in enumerate(all_tournaments.tournaments):
             print(f"{i + 1}/ Le tournoi {tournament}")
         print(f"{len(all_tournaments.tournaments) + 1}/ Retour en arrière")
@@ -87,6 +90,15 @@ def show_tournaments_controller():
     )
     print("---------------")
     for tournament in all_tournaments.tournaments:
+        print(f"Le tournoi {tournament.name} se situant {tournament.place} "
+              f"se déroule {tournament.date.lower()}.")
+        print(f"Le contrôle du temps est le {tournament.time_control}, "
+              f"et il doit comporter {tournament.number_of_rounds} tours.")
+        print(
+            f"Il y a actuellement {len(tournament.rounds)} tour(s) "
+            f"dans le tournoi {tournament}."
+        )
+        print("")
         ranking_controller(tournament)
     tournaments_controller()
 
