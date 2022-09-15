@@ -4,8 +4,10 @@
 
 ## About The Project
 
-chestTournament est un programme qui peut être lancé depuis une console. Il permet de créer et d'enregistrer des
-tournois d'échecs, de les administrer, ainsi que leurs joueurs.
+chestTournament est un programme qui peut être lancé depuis une console.
+
+Il permet de créer et d'enregistrer des tournois d'échecs, de les administrer, et de gérer les scores des joueurs.
+Chaque tournoi doit comporter 8 joueurs et les matchs sont générés selon le système de tournoi Suisse.
 
 ## Technologies
 
@@ -25,15 +27,16 @@ tournois d'échecs, de les administrer, ainsi que leurs joueurs.
 
 ### Usage
 
-- Pour exécuter le web scraping, utilisez dans votre terminal la commande suivante:
+- Pour exécuter le programme, utilisez dans votre terminal la commande suivante:
     - `python main.py`
 
 ## Features
 
-[comment]: <> (- A compléter et modifier les exclusions pour le rapport flake8)
-
-- pour générer le rapport flake8:
-  flake8 --format=html --htmldir=flake8_rapport --exclude env,.env --max-line-length=119
+- Chargement automatique de la sauvegarde à chaque lancement
+- Sauvegarde automatique à chaque modification de données
+- Limitation de la création de tours tant que le tour actuellement disputé n'est pas clos
+- Possibilité de générer un rapport flake8 en tapant la ligne de commande suivante:
+    - `flake8 --format=html --htmldir=flake8_rapport --exclude env,.env --max-line-length=119`
 
 ## Author
 
