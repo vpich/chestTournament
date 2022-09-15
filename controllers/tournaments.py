@@ -33,10 +33,6 @@ def tournaments_controller():
     elif choice == 6:
         quit_view()
         exit()
-    # elif choice == 7:
-    #     crud_data.save_data(all_tournaments.tournaments)
-    # elif choice == 8:
-    #     crud_data.load_data()
     else:
         print("Je n'ai pas compris votre choix.")
         tournaments_controller()
@@ -88,8 +84,8 @@ def show_tournaments_controller():
         f"Il y a actuellement "
         f"{len(all_tournaments.tournaments)} tournoi(s) enregistré(s)."
     )
-    print("---------------")
     for tournament in all_tournaments.tournaments:
+        print("---------------")
         print(f"Le tournoi {tournament.name} se situant {tournament.place} "
               f"se déroule {tournament.date.lower()}.")
         print(f"Le contrôle du temps est le {tournament.time_control}, "
@@ -112,7 +108,7 @@ def add_tournament_controller():
     if not all_tournaments.tournaments:
         tournament_id = 1
     else:
-        tournament_id = len(all_tournaments.tournaments)
+        tournament_id = len(all_tournaments.tournaments) + 1
 
     end_date = check_date_format(input("Entrez la date de fin de tournoi: "))
     today = datetime.date(datetime.now())
@@ -144,7 +140,7 @@ def add_tournament_controller():
     new_tournament.description = description
     print("Tournoi bien créé")
     all_tournaments.add_tournament(new_tournament)
-    # save_data(all_tournaments.tournaments)
+    crud_data.save_data(all_tournaments.tournaments)
     tournaments_controller()
 
 
@@ -177,7 +173,7 @@ def delete_tournament_controller():
         tournament_to_delete = all_tournaments.tournaments[choice]
         if check_deletion():
             all_tournaments.delete_tournament(tournament_to_delete)
-            # save_data(all_tournaments.tournaments)
+            crud_data.save_data(all_tournaments.tournaments)
             print(f"Le tournoi {tournament_to_delete.name} a bien été supprimé.")
             tournaments_controller()
         else:

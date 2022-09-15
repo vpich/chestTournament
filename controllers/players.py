@@ -4,7 +4,7 @@ from .checks import (
     check_int_input,
     check_date_format, check_deletion)
 from .ranking import ranking_controller, filter_players_by_name
-from . import selected_tournament
+from . import selected_tournament, crud_data, tournaments
 
 
 def players_controller(tournament):
@@ -43,7 +43,7 @@ def add_player_controller(tournament):
         if not tournament.players:
             player_id = 1
         else:
-            player_id = len(tournament.players)
+            player_id = len(tournament.players) + 1
         firstname = input("Entrez le prénom du joueur: ")
         lastname = input("Entrez le nom de famille du joueur: ")
         date_of_birth = check_date_format(
@@ -58,7 +58,7 @@ def add_player_controller(tournament):
         gender = input("Entrez le sexe du joueur: ")
         new_player = Player(player_id, firstname, lastname, date_of_birth, gender)
         tournament.players.append(new_player)
-        # save_data(all_tournaments.tournaments)
+        crud_data.save_data(tournaments.all_tournaments.tournaments)
         print(f"Le joueur {firstname} {lastname} " f"a bien été ajouté au tournoi.")
         players_controller(tournament)
 
@@ -134,7 +134,7 @@ def edit_player_controller(tournament):
         else:
             print("Je n'ai pas compris votre choix.")
             edit_player_controller(tournament)
-        # save_data(all_tournaments.tournaments)
+        crud_data.save_data(tournaments.all_tournaments.tournaments)
         print("La modification a été enregistrée.")
         players_controller(tournament)
 
@@ -173,7 +173,7 @@ def delete_player_controller(tournament):
         player_to_delete = tournament.players[choice]
         if check_deletion():
             tournament.delete_player(player_to_delete)
-            # save_data(all_tournaments.tournaments)
+            crud_data.save_data(tournaments.all_tournaments.tournaments)
             print(f"Le joueur {player_to_delete} a bien été supprimé.")
             players_controller(tournament)
         else:

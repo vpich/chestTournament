@@ -1,7 +1,7 @@
 from models import Round, Match
 from views import rounds_view
 from .checks import check_int_input, check_deletion
-from . import selected_tournament
+from . import selected_tournament, crud_data, tournaments
 from .matches import matches_controller
 
 
@@ -45,7 +45,7 @@ def end_round_controller(tournament):
                 rounds_controller(tournament)
         round_to_end.ending()
         print(f"Le {round_to_end} a bien été clôturé.")
-        # save_data(all_tournaments.tournaments)
+        crud_data.save_data(tournaments.all_tournaments.tournaments)
         rounds_controller(tournament)
 
 
@@ -96,7 +96,7 @@ def add_round_controller(tournament):
                 )
                 i += 1
 
-            # save_data(all_tournaments.tournaments)
+            crud_data.save_data(tournaments.all_tournaments.tournaments)
             print("Premier tour créé")
             rounds_controller(tournament)
 
@@ -126,7 +126,7 @@ def add_round_controller(tournament):
                             )
                             break
 
-            # save_data(all_tournaments.tournaments)
+            crud_data.save_data(tournaments.all_tournaments.tournaments)
             print("Fin de la création des matchs")
 
             print(f"Le {new_round} a été créé.")
@@ -157,7 +157,7 @@ def delete_round_controller(tournament):
             if check_deletion():
                 round_to_delete = tournament.rounds[choice]
                 tournament.delete_round(round_to_delete)
-                # save_data(all_tournaments.tournaments)
+                crud_data.save_data(tournaments.all_tournaments.tournaments)
                 print(f"Le {round_to_delete} a bien été supprimé.")
                 rounds_controller(tournament)
             else:
@@ -170,5 +170,5 @@ def edit_round_controller(tournament):
         rounds_controller(tournament)
     else:
         matches_controller(tournament.rounds[-1])
-        # save_data(all_tournaments.tournaments)
+        crud_data.save_data(tournaments.all_tournaments.tournaments)
         rounds_controller(tournament)

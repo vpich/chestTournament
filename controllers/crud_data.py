@@ -16,7 +16,7 @@ def save_data(tournaments_to_save):
     for tournament in tournaments_to_save:
         tournament.save()
     print("Enregistrement dans le fichier db.json terminé.")
-    tournaments_controller()
+    # tournaments_controller()
 
 
 def delete_data():

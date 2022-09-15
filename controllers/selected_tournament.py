@@ -1,8 +1,6 @@
-from datetime import datetime
-
 from views import selected_tournament_view
 from .checks import check_int_input, check_date_format
-from . import players
+from . import players, crud_data
 from .rounds import rounds_controller
 from .time_control import time_control_selection
 from . import tournaments
@@ -90,6 +88,6 @@ def edit_selected_tournament_controller(tournament):
         else:
             print("Je n'ai pas compris votre choix.")
             edit_selected_tournament_controller(tournament)
-        # save_data(all_tournaments.tournaments)
+        crud_data.save_data(tournaments.all_tournaments.tournaments)
         print(f"Le tournoi {tournament} a bien été modifié.")
         selected_tournament_controller(tournament)
