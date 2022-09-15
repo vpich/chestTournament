@@ -1,6 +1,6 @@
 def players_view(tournament):
     print("--------------")
-    print("Liste des participants: ")
+    print(f"Liste des {len(tournament.players)} participants du tournoi {tournament}: ")
     for player in tournament.players:
         print(player)
     print("--------------")

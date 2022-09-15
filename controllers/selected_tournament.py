@@ -91,4 +91,5 @@ def edit_selected_tournament_controller(tournament):
             print("Je n'ai pas compris votre choix.")
             edit_selected_tournament_controller(tournament)
         # save_data(all_tournaments.tournaments)
+        print(f"Le tournoi {tournament} a bien été modifié.")
         selected_tournament_controller(tournament)

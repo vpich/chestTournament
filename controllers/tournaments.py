@@ -142,11 +142,9 @@ def add_tournament_controller():
     )
     description = input("Entrez la description du tournoi: ")
     new_tournament.description = description
-    print(f"{date}")
     print("Tournoi bien créé")
     all_tournaments.add_tournament(new_tournament)
     # save_data(all_tournaments.tournaments)
-    print("*****************************")
     tournaments_controller()
 
 

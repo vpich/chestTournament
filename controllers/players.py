@@ -74,7 +74,7 @@ def edit_player_controller(tournament):
         print("Pour quel joueur souhaitez-vous modifier les informations ?")
         print("--------------")
         for i, player in enumerate(tournament.players):
-            print(f"{i + 1}/ Modifier {player}")
+            print(f"{i + 1}/ Modifier le joueur {player}")
         choice = input("Tapez le numéro du joueur à modifier: ")
 
         if check_int_input(choice):
@@ -174,7 +174,7 @@ def delete_player_controller(tournament):
         if check_deletion():
             tournament.delete_player(player_to_delete)
             # save_data(all_tournaments.tournaments)
-            print(f"Le {player_to_delete} a bien été supprimé.")
+            print(f"Le joueur {player_to_delete} a bien été supprimé.")
             players_controller(tournament)
         else:
             players_controller(tournament)
