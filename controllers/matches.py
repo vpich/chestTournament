@@ -1,10 +1,11 @@
 from views import matches_view
 from .checks import check_int_input
+from .rand_black_or_white import random_black_or_white
 
 
 def matches_controller(tournament_round):
     matches_view(tournament_round)
-    match_selected = input("Tapez le numéro du match à mettre à jour: ")
+    match_selected = input("Tapez le numéro du match à mettre à gérer: ")
     print("--------------")
     if not check_int_input(match_selected):
         print("Je n'ai pas compris votre choix.")
@@ -12,10 +13,35 @@ def matches_controller(tournament_round):
     else:
         match_selected = int(match_selected) - 1
         if match_selected < len(tournament_round.matches):
-            update_winner(tournament_round.matches[match_selected])
+            match_selected_controller(tournament_round.matches[match_selected])
         else:
             print("Je n'ai pas compris votre choix.")
             matches_controller(tournament_round)
+
+
+def match_selected_controller(match_selected):
+    print("Que souhaitez-vous faire ?")
+    print("--------------")
+    print(f"1/ Lancer un choix aléatoire pour définir "
+          f"la couleur à jouer pour le joueur {match_selected.contestants[0]}")
+    print("2/ Mettre à jour le vainqueur de cette partie")
+    print("3/ Retour en arrière")
+    print("--------------")
+    choice = input("Tapez le numéro souhaité pour sélectionner votre choix: ")
+    print("--------------")
+    if not check_int_input(choice):
+        match_selected_controller(match_selected)
+    else:
+        choice = int(choice)
+        if choice == 1:
+            random_black_or_white(match_selected.contestants[0])
+        elif choice == 2:
+            update_winner(match_selected)
+        elif choice == 3:
+            pass
+        else:
+            print("Je n'ai pas compris votre choix")
+            match_selected_controller(match_selected)
 
 
 def update_winner(match_selected):

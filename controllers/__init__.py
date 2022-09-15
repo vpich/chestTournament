@@ -12,6 +12,7 @@ from .tournaments import tournaments_controller
 from .rounds import rounds_controller
 from .selected_tournament import selected_tournament_controller, edit_selected_tournament_controller
 from .time_control import time_control_selection
+from .rand_black_or_white import random_black_or_white
 
 __all__ = [
     "check_date_format",
@@ -30,5 +31,6 @@ __all__ = [
     "selected_tournament_controller",
     "edit_selected_tournament_controller",
     "time_control_selection",
-    "tournaments_controller"
+    "tournaments_controller",
+    "random_black_or_white"
 ]
