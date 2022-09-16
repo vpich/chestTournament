@@ -15,7 +15,7 @@ def check_date_format(user_input):
         date_to_check = datetime.strptime(user_input, "%d/%m/%Y")
         return datetime.date(date_to_check)
     except ValueError:
-        print("Format de date invalide.")
+        print("Format de date invalide. Format demandé: JJ/MM/AAAA")
         return False
 
 

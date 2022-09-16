@@ -56,7 +56,13 @@ def add_player_controller(tournament):
             )
             add_player_controller(tournament)
         gender = input("Entrez le sexe du joueur: ")
-        new_player = Player(player_id, firstname, lastname, date_of_birth, gender)
+        rank = input("Entrez le rang du joueur: ")
+        if not check_int_input(rank):
+            print("La rang doit être un nombre entier.")
+            add_player_controller(tournament)
+        else:
+            rank = int(rank)
+        new_player = Player(player_id, firstname, lastname, date_of_birth, gender, rank)
         tournament.players.append(new_player)
         crud_data.save_data(tournaments.all_tournaments.tournaments)
         print(f"Le joueur {firstname} {lastname} " f"a bien été ajouté au tournoi.")
@@ -166,7 +172,7 @@ def delete_player_controller(tournament):
             print("Je n'ai pas compris votre choix.")
             print(
                 f"Veuillez saisir un chiffre compris "
-                f"entre 1 et {len(tournament.players)}"
+                f"entre 1 et {len(tournament.players) + 1}"
             )
             delete_player_controller(tournament)
 

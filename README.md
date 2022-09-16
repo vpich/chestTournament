@@ -33,7 +33,7 @@ Chaque tournoi doit comporter 8 joueurs et les matchs sont générés selon le s
 ## Features
 
 - Chargement automatique de la sauvegarde à chaque lancement
-- Sauvegarde automatique à chaque modification de données
+- Sauvegarde automatique à chaque modification de données dans un fichier db.json
 - Limitation de la création de tours tant que le tour actuellement disputé n'est pas clos
 - Possibilité de générer un rapport flake8 en tapant la ligne de commande suivante:
     - `flake8 --format=html --htmldir=flake8_rapport --exclude env,.env --max-line-length=119`

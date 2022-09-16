@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from views import selected_tournament_view
 from .checks import check_int_input, check_date_format
 from . import players, crud_data
@@ -43,12 +45,14 @@ def edit_selected_tournament_controller(tournament):
     print("--------------")
     print("1/ Le nom")
     print("2/ Le lieu")
-    print("3/ Les dates")
+    print("3/ La date")
     print("4/ Le contrôle du temps")
     print("5/ Le nombre de tours")
     print("6/ Retour en arrière")
     choice = input("Taper un chiffre entre 1 et 6: ")
-    if check_int_input(choice):
+    if not check_int_input(choice):
+        edit_selected_tournament_controller(tournament)
+    else:
         choice = int(choice)
         if choice == 1:
             name = input("Entrez le nom du tournoi: ")
@@ -60,18 +64,9 @@ def edit_selected_tournament_controller(tournament):
             start_date = check_date_format(input("Entrez la date de début de tournoi: "))
             if not start_date:
                 edit_selected_tournament_controller(tournament)
-            end_date = check_date_format(input("Entrez la date de fin de tournoi: "))
-            if not end_date:
-                edit_selected_tournament_controller(tournament)
-            if end_date < start_date:
-                print("La date ne peut pas être antérieure à la date de début.")
-                edit_selected_tournament_controller(tournament)
             else:
-                date = (
-                    f"Du {start_date.strftime('%d/%m/%Y')} "
-                    f"au {end_date.strftime('%d/%m/%Y')}"
-                )
-            tournament.date = date
+                start_date = datetime.strptime(start_date, "%d/%m/%Y")
+            tournament.date = start_date
         elif choice == 4:
             time_control = time_control_selection()
             tournament.time_control = time_control

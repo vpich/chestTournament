@@ -100,8 +100,6 @@ def show_tournaments_controller():
 
 
 def add_tournament_controller():
-    print("****************************")
-    print("Un nouveau tournoi va commencer aujourd'hui")
     name = input("Entrez le nom du tournoi: ")
     place = input("Entrez le lieu où se déroule le tournoi: ")
 
@@ -110,15 +108,11 @@ def add_tournament_controller():
     else:
         tournament_id = len(all_tournaments.tournaments) + 1
 
-    end_date = check_date_format(input("Entrez la date de fin de tournoi: "))
-    today = datetime.date(datetime.now())
-    if not end_date:
-        add_tournament_controller()
-    if end_date < today:
-        print("La date ne peut pas être antérieure à aujourd'hui.")
+    start_date = check_date_format(input("Entrez la date de début de tournoi (format JJ/MM/AAAA): "))
+    if not start_date:
         add_tournament_controller()
     else:
-        date = f"Du {today.strftime('%d/%m/%Y')} " f"au {end_date.strftime('%d/%m/%Y')}"
+        start_date = datetime.strptime(start_date, "%d/%m/%Y")
 
     time_control = time_control_selection()
     number_of_rounds = input("Entrez le nombre de tours: ")
@@ -134,7 +128,7 @@ def add_tournament_controller():
         number_of_rounds = int(number_of_rounds)
 
     new_tournament = Tournament(
-        tournament_id, name, place, date, time_control, number_of_rounds
+        tournament_id, name, place, start_date, time_control, number_of_rounds
     )
     description = input("Entrez la description du tournoi: ")
     new_tournament.description = description

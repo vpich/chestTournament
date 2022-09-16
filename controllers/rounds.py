@@ -26,6 +26,9 @@ def rounds_controller(tournament):
         end_round_controller(tournament)
     elif choice == 5:
         selected_tournament.selected_tournament_controller(tournament)
+    else:
+        print("Je n'ai pas compris votre choix.")
+        rounds_controller(tournament)
 
 
 def end_round_controller(tournament):

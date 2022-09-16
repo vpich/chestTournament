@@ -6,10 +6,10 @@ def ranking_controller(tournament):
         print("Il n'y a pas de joueurs qui participent à ce tournoi.")
     else:
         tournament.order_players_by_points_and_ranks()
-        for player in tournament.players:
-            player.rank = tournament.players.index(player) + 1
+        # for player in tournament.players:
+        #     player.rank = tournament.players.index(player) + 1
         for i, player in enumerate(tournament.players):
-            print(f"{i + 1}/ {player}, points gagnés: {player.total_points}")
+            print(f"{i + 1}/ {player}, points gagnés: {player.total_points}, rang: {player.rank}")
     print("")
 
 
