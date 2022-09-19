@@ -5,7 +5,7 @@ def players_view(tournament):
         print(player)
     print("--------------")
     print("Que souhaitez-vous faire ?")
-    print("--------------")
+    print("")
     print("1/ Rajouter un joueur")
     print("2/ Modifier les informations d'un joueur")
     print("3/ Supprimer un joueur")

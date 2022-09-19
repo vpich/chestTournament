@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from models import AllTournaments, Tournament
 from views import tournaments_view, quit_view
 from .checks import check_int_input, check_date_format, check_deletion
@@ -36,19 +34,19 @@ def tournaments_controller():
     else:
         print("Je n'ai pas compris votre choix.")
         tournaments_controller()
-    print("-----------------")
+    print("")
 
 
 def manage_tournament_controller():
     if not all_tournaments.tournaments:
         print("-----------")
         print("Il n'y a aucun tounoi en cours")
-        print("-----------")
+        print("")
         tournaments_controller()
     else:
         print("-----------")
         print("Quel tournoi souhaitez-vous modifier ?")
-        print("-----------")
+        print("")
         for i, tournament in enumerate(all_tournaments.tournaments):
             print(f"{i + 1}/ Le tournoi {tournament}")
         print(f"{len(all_tournaments.tournaments) + 1}/ Retour en arrière")
@@ -86,13 +84,15 @@ def show_tournaments_controller():
     )
     for tournament in all_tournaments.tournaments:
         print("---------------")
-        print(f"Le tournoi {tournament.name} se situant {tournament.place} "
-              f"se déroule {tournament.date.lower()}.")
-        print(f"Le contrôle du temps est le {tournament.time_control}, "
-              f"et il doit comporter {tournament.number_of_rounds} tours.")
+        print(
+            f"Nom: {tournament.name}, Lieu: {tournament.place}, "
+            f"Date: {tournament.date}, "
+            f"Contrôle du temps: {tournament.time_control}, "
+            f"Nombre de tours: {tournament.number_of_rounds}"
+        )
         print(
             f"Il y a actuellement {len(tournament.rounds)} tour(s) "
-            f"dans le tournoi {tournament}."
+            "dans ce tournoi."
         )
         print("")
         ranking_controller(tournament)
@@ -112,7 +112,7 @@ def add_tournament_controller():
     if not start_date:
         add_tournament_controller()
     else:
-        start_date = datetime.strptime(start_date, "%d/%m/%Y")
+        start_date = start_date.strftime("%d/%m/%Y")
 
     time_control = time_control_selection()
     number_of_rounds = input("Entrez le nombre de tours: ")
@@ -153,21 +153,18 @@ def delete_tournament_controller():
         else:
             delete_tournament_controller()
 
-        if choice > len(all_tournaments.tournaments):
+        if choice >= len(all_tournaments.tournaments):
             print("Je n'ai pas compris votre choix.")
             print(
                 f"Veuillez saisir un chiffre compris "
-                f"entre 1 et {len(all_tournaments.tournaments)}"
+                f"entre 1 et {len(all_tournaments.tournaments) + 1}"
             )
             delete_tournament_controller()
-
-        if choice == len(all_tournaments.tournaments):
-            tournaments_controller()
 
         tournament_to_delete = all_tournaments.tournaments[choice]
         if check_deletion():
             all_tournaments.delete_tournament(tournament_to_delete)
-            crud_data.save_data(all_tournaments.tournaments)
+            crud_data.delete_tournament(tournament_to_delete.tournament_id)
             print(f"Le tournoi {tournament_to_delete.name} a bien été supprimé.")
             tournaments_controller()
         else:

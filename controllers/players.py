@@ -57,11 +57,15 @@ def add_player_controller(tournament):
             add_player_controller(tournament)
         gender = input("Entrez le sexe du joueur: ")
         rank = input("Entrez le rang du joueur: ")
-        if not check_int_input(rank):
-            print("La rang doit être un nombre entier.")
-            add_player_controller(tournament)
+        if rank == "":
+            rank = 0
         else:
-            rank = int(rank)
+            if not check_int_input(rank):
+                print("La rang doit être un nombre entier.")
+                print("")
+                add_player_controller(tournament)
+            else:
+                rank = int(rank)
         new_player = Player(player_id, firstname, lastname, date_of_birth, gender, rank)
         tournament.players.append(new_player)
         crud_data.save_data(tournaments.all_tournaments.tournaments)
@@ -73,12 +77,12 @@ def edit_player_controller(tournament):
     if not tournament.players:
         print("--------------")
         print("Il n'y a aucun joueur d'enregistrés.")
-        print("--------------")
+        print("")
         players_controller(tournament)
     else:
         print("--------------")
         print("Pour quel joueur souhaitez-vous modifier les informations ?")
-        print("--------------")
+        print("")
         for i, player in enumerate(tournament.players):
             print(f"{i + 1}/ Modifier le joueur {player}")
         choice = input("Tapez le numéro du joueur à modifier: ")
@@ -100,7 +104,7 @@ def edit_player_controller(tournament):
         print("--------------")
         print(f"Vous allez éditer les informations de {player_to_modify}")
         print("Que souhaitez-vous modifier ?")
-        print("--------------")
+        print("")
         print("1/ Son prénom")
         print("2/ Son nom de famille")
         print("3/ Sa date de naissance")
@@ -149,12 +153,12 @@ def delete_player_controller(tournament):
     if not tournament.players:
         print("--------------")
         print("Il n'y a aucun joueur d'enregistré.")
-        print("--------------")
+        print("")
         players_controller(tournament)
     else:
         print("--------------")
         print("Quel joueur souhaitez-vous supprimer du tournoi ?")
-        print("--------------")
+        print("")
         for i, player in enumerate(tournament.players):
             print(f"{i + 1}/ Supprimer {player} ?")
         print(f"{len(tournament.players) + 1}/ Retour en arrière")

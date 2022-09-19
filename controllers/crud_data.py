@@ -1,4 +1,4 @@
-from tinydb import TinyDB
+from tinydb import TinyDB, Query
 from pathlib import Path
 
 from models import Tournament, Player, Round, Match
@@ -16,6 +16,11 @@ def save_data(tournaments_to_save):
     for tournament in tournaments_to_save:
         tournament.save()
     print("Enregistrement dans le fichier db.json terminé.")
+
+
+def delete_tournament(indice):
+    query = Query()
+    db.remove(query.id == f"{indice}")
 
 
 def delete_data():

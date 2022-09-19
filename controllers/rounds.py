@@ -9,7 +9,7 @@ def rounds_controller(tournament):
     rounds_view(tournament)
     print("--------------")
     choice = input("Tapez le nombre du choix à sélectionner: ")
-    print("--------------")
+    print("")
 
     if check_int_input(choice):
         choice = int(choice)
@@ -35,7 +35,7 @@ def end_round_controller(tournament):
     if not tournament.rounds:
         print("--------------")
         print("Il n'y a pas encore de tour créé dans ce tournoi.")
-        print("--------------")
+        print("")
         rounds_controller(tournament)
     else:
         round_to_end = tournament.rounds[-1]
@@ -143,7 +143,7 @@ def delete_round_controller(tournament):
     else:
         print("--------------")
         print("Quel tour souhaitez-vous supprimer ?")
-        print("--------------")
+        print("")
         for i, tournament_round in enumerate(tournament.rounds):
             print(f"{i + 1}/ Supprimer {tournament_round}")
         print(f"{len(tournament.rounds) + 1}/ Retour en arrière")

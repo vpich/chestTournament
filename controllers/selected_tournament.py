@@ -28,7 +28,7 @@ def selected_tournament_controller(tournament):
     else:
         print("Je n'ai pas compris votre choix.")
         selected_tournament_controller(tournament)
-    print("-----------------")
+    print("-")
 
 
 def edit_selected_tournament_controller(tournament):
@@ -36,13 +36,13 @@ def edit_selected_tournament_controller(tournament):
     print("Voici les informations actuelles du tournoi:")
     print(
         f"Nom: {tournament.name}, Lieu: {tournament.place}, "
-        f"Date(s): {tournament.date}, "
+        f"Date: {tournament.date}, "
         f"Contrôle du temps: {tournament.time_control}, "
         f"Nombre de tours: {tournament.number_of_rounds}"
     )
     print("--------------")
     print("Que souhaitez-vous modifier ?")
-    print("--------------")
+    print("")
     print("1/ Le nom")
     print("2/ Le lieu")
     print("3/ La date")
