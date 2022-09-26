@@ -52,12 +52,21 @@ def end_round_controller(tournament):
         rounds_controller(tournament)
 
 
+def new_round_parameters(player, other_player, new_round, assigned_players, players_history):
+    new_match = Match(player, other_player)
+    new_round.matches.append(new_match)
+    assigned_players.append(player)
+    assigned_players.append(other_player)
+    players_history[player.player_id].append(other_player)
+    players_history[other_player.player_id].append(player)
+
+
 def add_round_controller(tournament):
     if tournament.rounds:
         last_round = tournament.rounds[-1]
         if not last_round.end_time:
             print(
-                "Vous ne pouvez pas créé de nouveau tour, "
+                "Vous ne pouvez pas créer de nouveau tour, "
                 "tant que le tour précédent n'est pas clôturé"
             )
             rounds_controller(tournament)
@@ -103,31 +112,43 @@ def add_round_controller(tournament):
             print("Premier tour créé")
             rounds_controller(tournament)
 
-        elif len(tournament.rounds) > 1:
+        else:
             players_history = tournament.get_players_history()
             tournament.order_players_by_points_and_ranks()
 
             assigned_players = []
             for player in tournament.players:
                 if player not in assigned_players:
+                    found_oponent = False
                     for other_player in tournament.players:
                         if (
                                 other_player != player
                                 and other_player not in assigned_players
                                 and other_player not in players_history[player.player_id]
                         ):
-                            new_match = Match(player, other_player)
-                            new_round.matches.append(new_match)
-                            assigned_players.append(player)
-                            assigned_players.append(other_player)
-                            players_history[player.player_id].append(other_player)
-                            players_history[other_player.player_id].append(player)
+                            new_round_parameters(player, other_player, new_round,
+                                                 assigned_players, players_history)
                             print(
                                 f"Le match joueur {player.firstname} "
                                 f"contre joueur {other_player.firstname} "
                                 f"a été ajouté au {new_round}"
                             )
+                            found_oponent = True
                             break
+                    if not found_oponent:
+                        for other_player in tournament.players:
+                            if (
+                                    other_player != player
+                                    and other_player not in assigned_players
+                            ):
+                                new_round_parameters(player, other_player, new_round,
+                                                     assigned_players, players_history)
+                                print(
+                                    f"Le match joueur {player.firstname} "
+                                    f"contre joueur {other_player.firstname} "
+                                    f"a été ajouté au {new_round} (bien qu'ils aient déjà joué ensemble)"
+                                )
+                                break
 
             crud_data.save_data(tournaments.all_tournaments.tournaments)
             print("Fin de la création des matchs")
