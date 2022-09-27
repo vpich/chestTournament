@@ -1,6 +1,8 @@
-def quit_view():
-    print("")
-    print("*******************************")
-    print("Vous avez quitté le programme.")
-    print("*******************************")
-    print("")
+class QuitView:
+    @staticmethod
+    def quit():
+        print("")
+        print("*******************************")
+        print("Vous avez quitté le programme.")
+        print("*******************************")
+        print("")

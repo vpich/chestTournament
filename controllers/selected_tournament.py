@@ -4,7 +4,7 @@ from views import selected_tournament_view
 from .checks import Check
 from . import players
 from .rounds import RoundsController
-from .time_control import time_control_selection
+from .time_control import TimeControl
 from . import tournaments
 from crud_data import Data
 
@@ -26,7 +26,7 @@ class SelectedTournamentController:
         elif choice == 3:
             RoundsController.main(tournament)
         elif choice == 4:
-            tournaments.tournaments_controller()
+            tournaments.TournamentsController.main()
         else:
             print("Je n'ai pas compris votre choix.")
             self.main(tournament)
@@ -69,7 +69,7 @@ class SelectedTournamentController:
                     start_date = datetime.strptime(start_date, "%d/%m/%Y")
                 tournament.date = start_date
             elif choice == 4:
-                time_control = time_control_selection()
+                time_control = TimeControl.selection()
                 tournament.time_control = time_control
             elif choice == 5:
                 user_input = input("Entrez le nombre de tours: ")
