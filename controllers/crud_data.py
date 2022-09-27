@@ -2,9 +2,9 @@ from tinydb import TinyDB, Query
 from pathlib import Path
 
 from models import Tournament, Player, Round, Match
-from .checks import Checks
+from .checks import Check
 
-from .tournaments import tournaments_controller
+from .tournaments import TournamentsController
 from . import tournaments
 
 all_tournaments = tournaments.all_tournaments
@@ -27,14 +27,14 @@ class Data:
 
     @staticmethod
     def delete():
-        if Checks.deletion():
+        if Check.deletion():
             all_tournaments.tournaments = []
             db.truncate()
             print("Suppression de tous les tournois du fichier db.json terminée")
-            tournaments_controller()
+            TournamentsController.main()
         else:
             print("Suppression annulée")
-            tournaments_controller()
+            TournamentsController.main()
 
     @staticmethod
     def load():

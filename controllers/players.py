@@ -1,7 +1,7 @@
 from views import PlayersView
 from models import Player
-from .checks import Checks
-from .ranking import ranking_controller, filter_players_by_name
+from .checks import Check
+from .ranking import SortPlayers
 from . import selected_tournament, tournaments
 from crud_data import Data
 
@@ -12,7 +12,7 @@ class PlayersController:
 
         choice = PlayersView.main(tournament)
 
-        if Checks.int_input(choice):
+        if Check.int_input(choice):
             choice = int(choice)
         else:
             self.main(tournament)
@@ -24,13 +24,13 @@ class PlayersController:
         elif choice == 3:
             self.delete_player(tournament)
         elif choice == 4:
-            ranking_controller(tournament)
+            SortPlayers.by_ranking(tournament)
             self.main(tournament)
         elif choice == 5:
-            filter_players_by_name(tournament)
+            SortPlayers.by_name(tournament)
             self.main(tournament)
         elif choice == 6:
-            selected_tournament.selected_tournament_controller(tournament)
+            selected_tournament.SelectedTournamentController.main(tournament)
         else:
             PlayersView.unknown_choice()
             self.main(tournament)
@@ -46,7 +46,7 @@ class PlayersController:
             else:
                 player_id = len(tournament.players) + 1
             new_player_info = PlayersView.add_player()
-            if not Checks.date_format(new_player_info["date_of_birth"]):
+            if not Check.date_format(new_player_info["date_of_birth"]):
                 print(
                     "La date de naissance est invalide, "
                     "veuillez taper une date au format JJ/MM/AAAA"
@@ -56,7 +56,7 @@ class PlayersController:
             if new_player_info["rank"] == "":
                 rank = 0
             else:
-                if not Checks.int_input(new_player_info["rank"]):
+                if not Check.int_input(new_player_info["rank"]):
                     print("La rang doit être un nombre entier.")
                     print("")
                     self.add_player(tournament)
@@ -90,7 +90,7 @@ class PlayersController:
                 print(f"{i + 1}/ Modifier le joueur {player}")
             choice = input("Tapez le numéro du joueur à modifier: ")
 
-            if Checks.int_input(choice):
+            if Check.int_input(choice):
                 choice = int(choice) - 1
             else:
                 self.edit_player(tournament)
@@ -122,7 +122,7 @@ class PlayersController:
                 lastname = input("Entrez le nom de famille du joueur: ")
                 player_to_modify.lastname = lastname
             elif choice == 3:
-                date_of_birth = Checks.date_format(input("Entrez la date de naissance du joueur: "))
+                date_of_birth = Check.date_format(input("Entrez la date de naissance du joueur: "))
                 if not date_of_birth:
                     print(
                         "La date de naissance est invalide, "
@@ -135,7 +135,7 @@ class PlayersController:
                 player_to_modify.gender = gender
             elif choice == 5:
                 rank = input("Entrez le score du joueur: ")
-                if Checks.int_input(rank):
+                if Check.int_input(rank):
                     rank = int(rank)
                 else:
                     self.edit_player(tournament)
@@ -164,7 +164,7 @@ class PlayersController:
             print(f"{len(tournament.players) + 1}/ Retour en arrière")
             choice = input("Tapez le numéro du joueur à supprimer: ")
 
-            if Checks.int_input(choice):
+            if Check.int_input(choice):
                 choice = int(choice) - 1
             else:
                 self.delete_player(tournament)
@@ -181,7 +181,7 @@ class PlayersController:
                 self.delete_player(tournament)
 
             player_to_delete = tournament.players[choice]
-            if Checks.deletion():
+            if Check.deletion():
                 tournament.delete_player(player_to_delete)
                 Data.save(tournaments.all_tournaments.tournaments)
                 print(f"Le joueur {player_to_delete} a bien été supprimé.")
