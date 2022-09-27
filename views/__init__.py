@@ -1,17 +1,17 @@
-from .matches import matches_view
-from .rounds import rounds_view
+from .matches import MatchesView
+from .rounds import RoundsView
 from .players import PlayersView
-from .selected_tournament import selected_tournament_view
-from .tournaments import tournaments_view
-from .welcome_view import welcome_view
-from .quit_view import quit_view
+from .selected_tournament import SelectedTournamentView
+from .tournaments import TournamentsView
+from .welcome_view import WelcomeView
+from .quit_view import QuitView
 
 __all__ = [
-    "matches_view",
-    "rounds_view",
+    "MatchesView",
+    "RoundsView",
     "PlayersView",
-    "selected_tournament_view",
-    "tournaments_view",
-    "welcome_view",
-    "quit_view"
+    "SelectedTournamentView",
+    "TournamentsView",
+    "WelcomeView",
+    "QuitView"
 ]

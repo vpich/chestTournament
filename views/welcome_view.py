@@ -1,6 +1,6 @@
 class WelcomeView:
     @staticmethod
-    def welcome_view():
+    def welcome():
         print("")
         print("*******************************")
         print("Bienvenue dans ce programme de gestion de tournoi d'échec")

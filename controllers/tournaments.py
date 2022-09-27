@@ -1,9 +1,8 @@
 from models import AllTournaments, Tournament
-from views import tournaments_view, quit_view
+from views import TournamentsView, QuitView
 from .checks import Check
 from .ranking import SortPlayers
-# from . import crud_data
-from crud_data import Data
+from . import crud_data
 from .selected_tournament import SelectedTournamentController
 from .time_control import TimeControl
 
@@ -12,7 +11,7 @@ all_tournaments = AllTournaments()
 
 class TournamentsController:
     def main(self):
-        tournaments_view()
+        TournamentsView.tournaments()
         choice = input("Tapez le nombre du choix à sélectionner: ")
 
         if Check.int_input(choice):
@@ -29,9 +28,9 @@ class TournamentsController:
         elif choice == 4:
             self.delete_tournament_controller()
         elif choice == 5:
-            Data.delete()
+            crud_data.Data.delete()
         elif choice == 6:
-            quit_view()
+            QuitView.quit()
             exit()
         else:
             print("Je n'ai pas compris votre choix.")
@@ -133,7 +132,7 @@ class TournamentsController:
         new_tournament.description = description
         print("Tournoi bien créé")
         all_tournaments.add_tournament(new_tournament)
-        Data.save(all_tournaments.tournaments)
+        crud_data.Data.save(all_tournaments.tournaments)
         self.main()
 
     def delete_tournament_controller(self):
@@ -162,7 +161,7 @@ class TournamentsController:
             tournament_to_delete = all_tournaments.tournaments[choice]
             if Check.deletion():
                 all_tournaments.delete_tournament(tournament_to_delete)
-                Data.delete_tournament(tournament_to_delete.tournament_id)
+                crud_data.Data.delete_tournament(tournament_to_delete.tournament_id)
                 print(f"Le tournoi {tournament_to_delete.name} a bien été supprimé.")
                 self.main()
             else:

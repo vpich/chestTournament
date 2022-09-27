@@ -1,17 +1,16 @@
 from datetime import datetime
 
-from views import selected_tournament_view
+from views import SelectedTournamentView
 from .checks import Check
 from . import players
 from .rounds import RoundsController
 from .time_control import TimeControl
-from . import tournaments
-from crud_data import Data
+from . import tournaments, crud_data
 
 
 class SelectedTournamentController:
     def main(self, tournament):
-        selected_tournament_view(tournament)
+        SelectedTournamentView.selected_tournament(tournament)
         choice = input("Tapez le numéro du choix à sélectionner: ")
 
         if Check.int_input(choice):
@@ -84,6 +83,6 @@ class SelectedTournamentController:
             else:
                 print("Je n'ai pas compris votre choix.")
                 self.edit_selected_tournament(tournament)
-            Data.save(tournaments.all_tournaments.tournaments)
+            crud_data.Data.save(tournaments.all_tournaments.tournaments)
             print(f"Le tournoi {tournament} a bien été modifié.")
             self.main(tournament)

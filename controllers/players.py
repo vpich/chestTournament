@@ -3,7 +3,7 @@ from models import Player
 from .checks import Check
 from .ranking import SortPlayers
 from . import selected_tournament, tournaments
-from crud_data import Data
+from . import crud_data
 
 
 class PlayersController:
@@ -71,7 +71,7 @@ class PlayersController:
                 rank
             )
             tournament.players.append(new_player)
-            Data.save(tournaments.all_tournaments.tournaments)
+            crud_data.Data.save(tournaments.all_tournaments.tournaments)
             print(f'Le joueur {new_player_info["firstname"]} {new_player_info["lastname"]} '
                   f'a bien été ajouté au tournoi.')
             self.main(tournament)
@@ -145,7 +145,7 @@ class PlayersController:
             else:
                 print("Je n'ai pas compris votre choix.")
                 self.edit_player(tournament)
-            Data.save(tournaments.all_tournaments.tournaments)
+            crud_data.Data.save(tournaments.all_tournaments.tournaments)
             print("La modification a été enregistrée.")
             self.main(tournament)
 
@@ -183,7 +183,7 @@ class PlayersController:
             player_to_delete = tournament.players[choice]
             if Check.deletion():
                 tournament.delete_player(player_to_delete)
-                Data.save(tournaments.all_tournaments.tournaments)
+                crud_data.Data.save(tournaments.all_tournaments.tournaments)
                 print(f"Le joueur {player_to_delete} a bien été supprimé.")
                 self.main(tournament)
             else:

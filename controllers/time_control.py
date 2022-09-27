@@ -1,4 +1,4 @@
-from checks import Check
+from .checks import Check
 
 
 class TimeControl:

@@ -1,4 +1,4 @@
-from views import matches_view
+from views import MatchesView
 from .checks import Check
 from .rand_black_or_white import RandomizeColor
 
@@ -6,7 +6,7 @@ from .rand_black_or_white import RandomizeColor
 class MatchesController:
 
     def main(self, tournament_round):
-        matches_view(tournament_round)
+        MatchesView.matches(tournament_round)
         match_selected = input("Tapez le numéro du match à mettre à gérer: ")
         print("")
         if not Check.int_input(match_selected):

@@ -1,15 +1,15 @@
 from models import Round, Match
-from views import rounds_view
+from views import RoundsView
 from .checks import Check
 from . import selected_tournament, tournaments
 from .matches import MatchesController
-from crud_data import Data
+from . import crud_data
 
 
 class RoundsController:
 
     def main(self, tournament):
-        rounds_view(tournament)
+        RoundsView.rounds(tournament)
         print("--------------")
         choice = input("Tapez le nombre du choix à sélectionner: ")
         print("")
@@ -50,7 +50,7 @@ class RoundsController:
                     self.main(tournament)
             round_to_end.ending()
             print(f"Le {round_to_end} a bien été clôturé.")
-            Data.save(tournaments.all_tournaments.tournaments)
+            crud_data.Data.save(tournaments.all_tournaments.tournaments)
             self.main(tournament)
 
     @staticmethod
@@ -109,7 +109,7 @@ class RoundsController:
                     )
                     i += 1
 
-                Data.save(tournaments.all_tournaments.tournaments)
+                crud_data.Data.save(tournaments.all_tournaments.tournaments)
                 print("Premier tour créé")
                 self.main(tournament)
 
@@ -151,7 +151,7 @@ class RoundsController:
                                     )
                                     break
 
-                Data.save(tournaments.all_tournaments.tournaments)
+                crud_data.Data.save(tournaments.all_tournaments.tournaments)
                 print("Fin de la création des matchs")
 
                 print(f"Le {new_round} a été créé.")
@@ -181,7 +181,7 @@ class RoundsController:
                 if Check.deletion():
                     round_to_delete = tournament.rounds[choice]
                     tournament.delete_round(round_to_delete)
-                    Data.save(tournaments.all_tournaments.tournaments)
+                    crud_data.Data.save(tournaments.all_tournaments.tournaments)
                     print(f"Le {round_to_delete} a bien été supprimé.")
                     self.main(tournament)
                 else:
@@ -193,5 +193,5 @@ class RoundsController:
             self.main(tournament)
         else:
             MatchesController.main(tournament.rounds[-1])
-            Data.save(tournaments.all_tournaments.tournaments)
+            crud_data.Data.save(tournaments.all_tournaments.tournaments)
             self.main(tournament)

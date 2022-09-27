@@ -1,9 +1,9 @@
-from views import welcome_view
+from views import WelcomeView
 
-from controllers import tournaments_controller, load_data
+from controllers import TournamentsController, Data
 
-welcome_view()
+WelcomeView.welcome()
 
-load_data()
+Data.load()
 print("")
-tournaments_controller()
+TournamentsController.main()
