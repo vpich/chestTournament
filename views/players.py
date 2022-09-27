@@ -1,7 +1,7 @@
 class PlayersView:
 
     @staticmethod
-    def players_view(self, tournament):
+    def main(tournament):
         print("--------------")
         print(f"Liste des {len(tournament.players)} participants du tournoi {tournament}: ")
         for player in tournament.players:
@@ -20,7 +20,7 @@ class PlayersView:
         return choice
 
     @staticmethod
-    def add_player_view(self):
+    def add_player():
         firstname = input("Entrez le prénom du joueur: ")
         lastname = input("Entrez le nom de famille du joueur: ")
         date_of_birth = input("Entrez la date de naissance du joueur " "(format JJ/MM/AAAA): ")
@@ -37,5 +37,5 @@ class PlayersView:
         }
 
     @staticmethod
-    def unknown_choice(self):
+    def unknown_choice():
         print("Je n'ai pas compris votre choix")

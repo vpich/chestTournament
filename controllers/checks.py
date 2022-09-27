@@ -1,10 +1,10 @@
 from datetime import datetime
 
 
-class Checks:
+class Check:
 
     @staticmethod
-    def check_int_input(self, user_input):
+    def int_input(user_input):
         if user_input.isdigit():
             return True
         else:
@@ -13,7 +13,7 @@ class Checks:
             return False
 
     @staticmethod
-    def check_date_format(self, user_input):
+    def date_format(user_input):
         try:
             date_to_check = datetime.strptime(user_input, "%d/%m/%Y")
             return datetime.date(date_to_check)
@@ -22,7 +22,7 @@ class Checks:
             return False
 
     @staticmethod
-    def check_deletion(self):
+    def deletion():
         print("Toute suppression est irréversible.")
         choice = input("Souhaitez-vous vraiment effectuer la suppression ? (y/n)")
         if choice == "y":
@@ -31,4 +31,4 @@ class Checks:
             return False
         else:
             print("Je n'ai pas compris votre choix.")
-            self.check_deletion()
+            Check.deletion()
