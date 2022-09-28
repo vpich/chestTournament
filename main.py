@@ -6,4 +6,6 @@ WelcomeView.welcome()
 
 Data.load()
 print("")
-TournamentsController.main()
+
+tournaments_self = TournamentsController()
+TournamentsController.main(tournaments_self)

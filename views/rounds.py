@@ -3,8 +3,8 @@ class RoundsView:
     def rounds(tournament):
         print("--------------")
         print("Liste des tours du tournoi:")
-        for round in tournament.rounds:
-            print(round)
+        for each_round in tournament.rounds:
+            print(each_round)
         print("--------------")
         print("Que souhaitez_vous faire ?")
         print("")

@@ -30,7 +30,9 @@ class PlayersController:
             SortPlayers.by_name(tournament)
             self.main(tournament)
         elif choice == 6:
-            selected_tournament.SelectedTournamentController.main(tournament)
+            selected_tournament_self = selected_tournament.SelectedTournamentController()
+            selected_tournament.SelectedTournamentController.main(selected_tournament_self,
+                                                                  tournament)
         else:
             PlayersView.unknown_choice()
             self.main(tournament)

@@ -7,6 +7,7 @@ from .selected_tournament import SelectedTournamentController
 from .time_control import TimeControl
 
 all_tournaments = AllTournaments()
+selected_tournament_self = SelectedTournamentController()
 
 
 class TournamentsController:
@@ -26,7 +27,7 @@ class TournamentsController:
         elif choice == 3:
             self.manage_tournament()
         elif choice == 4:
-            self.delete_tournament_controller()
+            self.delete_tournament()
         elif choice == 5:
             crud_data.Data.delete()
         elif choice == 6:
@@ -73,7 +74,8 @@ class TournamentsController:
                 )
                 self.manage_tournament()
 
-            SelectedTournamentController.main(all_tournaments.tournaments[selected_tournament])
+            SelectedTournamentController.main(selected_tournament_self,
+                                              all_tournaments.tournaments[selected_tournament])
 
     def show_tournaments(self):
         print("---------------")
@@ -112,7 +114,8 @@ class TournamentsController:
         else:
             start_date = start_date.strftime("%d/%m/%Y")
 
-        time_control = TimeControl.selection()
+        time_control_signature = TimeControl()
+        time_control = TimeControl.selection(time_control_signature)
         number_of_rounds = input("Entrez le nombre de tours: ")
 
         if number_of_rounds == "":
@@ -135,7 +138,7 @@ class TournamentsController:
         crud_data.Data.save(all_tournaments.tournaments)
         self.main()
 
-    def delete_tournament_controller(self):
+    def delete_tournament(self):
         if len(all_tournaments.tournaments) == 0:
             print("Il n'y a aucun tounoi en cours")
             self.main()
@@ -148,7 +151,7 @@ class TournamentsController:
             if Check.int_input(choice):
                 choice = int(choice) - 1
             else:
-                self.delete_tournament_controller()
+                self.delete_tournament()
 
             if choice >= len(all_tournaments.tournaments):
                 print("Je n'ai pas compris votre choix.")
@@ -156,7 +159,7 @@ class TournamentsController:
                     f"Veuillez saisir un chiffre compris "
                     f"entre 1 et {len(all_tournaments.tournaments) + 1}"
                 )
-                self.delete_tournament_controller()
+                self.delete_tournament()
 
             tournament_to_delete = all_tournaments.tournaments[choice]
             if Check.deletion():

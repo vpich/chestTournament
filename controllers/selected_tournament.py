@@ -7,6 +7,10 @@ from .rounds import RoundsController
 from .time_control import TimeControl
 from . import tournaments, crud_data
 
+players_controller_self = players.PlayersController()
+rounds_controller_self = RoundsController()
+time_control_self = TimeControl()
+
 
 class SelectedTournamentController:
     def main(self, tournament):
@@ -21,11 +25,12 @@ class SelectedTournamentController:
         if choice == 1:
             self.edit_selected_tournament(tournament)
         elif choice == 2:
-            players.PlayersController.main(tournament)
+            players.PlayersController.main(players_controller_self, tournament)
         elif choice == 3:
-            RoundsController.main(tournament)
+            RoundsController.main(rounds_controller_self, tournament)
         elif choice == 4:
-            tournaments.TournamentsController.main()
+            tournaments_controller_self = tournaments.TournamentsController()
+            tournaments.TournamentsController.main(tournaments_controller_self)
         else:
             print("Je n'ai pas compris votre choix.")
             self.main(tournament)
@@ -68,7 +73,7 @@ class SelectedTournamentController:
                     start_date = datetime.strptime(start_date, "%d/%m/%Y")
                 tournament.date = start_date
             elif choice == 4:
-                time_control = TimeControl.selection()
+                time_control = TimeControl.selection(time_control_self)
                 tournament.time_control = time_control
             elif choice == 5:
                 user_input = input("Entrez le nombre de tours: ")

@@ -5,6 +5,8 @@ from . import selected_tournament, tournaments
 from .matches import MatchesController
 from . import crud_data
 
+matches_self = MatchesController()
+
 
 class RoundsController:
 
@@ -28,7 +30,9 @@ class RoundsController:
         elif choice == 4:
             self.end_round(tournament)
         elif choice == 5:
-            selected_tournament.SelectedTournamentController.main(tournament)
+            selected_tournament_self = selected_tournament.SelectedTournamentController()
+            selected_tournament.SelectedTournamentController.main(selected_tournament_self,
+                                                                  tournament)
         else:
             print("Je n'ai pas compris votre choix.")
             self.main(tournament)
@@ -83,7 +87,9 @@ class RoundsController:
                     "Vous avez atteint la limite du nombre de tours, "
                     "le tournoi est déjà terminé."
                 )
-                selected_tournament.SelectedTournamentController.main(tournament)
+                selected_tournament_self = selected_tournament.SelectedTournamentController()
+                selected_tournament.SelectedTournamentController.main(selected_tournament_self,
+                                                                      tournament)
 
             new_round_number = len(tournament.rounds) + 1
             new_round_name = f"Tour {new_round_number}"
@@ -192,6 +198,6 @@ class RoundsController:
             print("Il n'y a pas encore de tour créé dans ce tournoi.")
             self.main(tournament)
         else:
-            MatchesController.main(tournament.rounds[-1])
+            MatchesController.main(matches_self, tournament.rounds[-1])
             crud_data.Data.save(tournaments.all_tournaments.tournaments)
             self.main(tournament)

@@ -8,6 +8,7 @@ from .tournaments import TournamentsController
 from . import tournaments
 
 all_tournaments = tournaments.all_tournaments
+tournaments_self = TournamentsController()
 db = TinyDB("db.json")
 db_file_path = Path("db.json")
 
@@ -31,10 +32,10 @@ class Data:
             all_tournaments.tournaments = []
             db.truncate()
             print("Suppression de tous les tournois du fichier db.json terminée")
-            TournamentsController.main()
+            TournamentsController.main(tournaments_self)
         else:
             print("Suppression annulée")
-            TournamentsController.main()
+            TournamentsController.main(tournaments_self)
 
     @staticmethod
     def load():
