@@ -1,4 +1,4 @@
-from views import PlayersView
+from views import PlayersView, ErrorsViews
 from models import Player
 from .checks import Check
 from .ranking import SortPlayers
@@ -40,7 +40,7 @@ class PlayersController:
     def add_player(self, tournament):
 
         if len(tournament.players) >= 8:
-            print("Vous avez atteint le nombre maximal de 8 joueurs.")
+            PlayersView.max_players()
             self.main(tournament)
         else:
             if not tournament.players:
@@ -49,10 +49,7 @@ class PlayersController:
                 player_id = len(tournament.players) + 1
             new_player_info = PlayersView.add_player()
             if not Check.date_format(new_player_info["date_of_birth"]):
-                print(
-                    "La date de naissance est invalide, "
-                    "veuillez taper une date au format JJ/MM/AAAA"
-                )
+                ErrorsViews.wrong_date_format()
                 self.add_player(tournament)
 
             if new_player_info["rank"] == "":
@@ -74,23 +71,15 @@ class PlayersController:
             )
             tournament.players.append(new_player)
             crud_data.Data.save(tournaments.all_tournaments.tournaments)
-            print(f'Le joueur {new_player_info["firstname"]} {new_player_info["lastname"]} '
-                  f'a bien été ajouté au tournoi.')
+            PlayersView.add_player_success(new_player)
             self.main(tournament)
 
     def edit_player(self, tournament):
         if not tournament.players:
-            print("--------------")
-            print("Il n'y a aucun joueur d'enregistrés.")
-            print("")
+            PlayersView.no_player()
             self.main(tournament)
         else:
-            print("--------------")
-            print("Pour quel joueur souhaitez-vous modifier les informations ?")
-            print("")
-            for i, player in enumerate(tournament.players):
-                print(f"{i + 1}/ Modifier le joueur {player}")
-            choice = input("Tapez le numéro du joueur à modifier: ")
+            choice = PlayersView.edit_player_selection(tournament)
 
             if Check.int_input(choice):
                 choice = int(choice) - 1
@@ -98,45 +87,29 @@ class PlayersController:
                 self.edit_player(tournament)
 
             if choice > len(tournament.players):
-                print("Je n'ai pas compris votre choix.")
-                print(
-                    f"Veuillez saisir un chiffre compris "
-                    f"entre 1 et {len(tournament.players)}"
-                )
+                ErrorsViews.unknown_choice()
+                ErrorsViews.number_required()
                 self.edit_player(tournament)
 
             player_to_modify = tournament.players[choice]
-            print("--------------")
-            print(f"Vous allez éditer les informations de {player_to_modify}")
-            print("Que souhaitez-vous modifier ?")
-            print("")
-            print("1/ Son prénom")
-            print("2/ Son nom de famille")
-            print("3/ Sa date de naissance")
-            print("4/ Son sexe")
-            print("5/ Son score")
-            print("6/ Retour en arrière")
-            choice = int(input("Tapez le numéro à modifier: "))
+            choice = PlayersView.edit_player_choices(player_to_modify)
             if choice == 1:
-                firstname = input("Entrez le prénom du joueur: ")
+                firstname = PlayersView.edit_player(choice)
                 player_to_modify.firstname = firstname
             elif choice == 2:
-                lastname = input("Entrez le nom de famille du joueur: ")
+                lastname = PlayersView.edit_player(choice)
                 player_to_modify.lastname = lastname
             elif choice == 3:
-                date_of_birth = Check.date_format(input("Entrez la date de naissance du joueur: "))
+                date_of_birth = Check.date_format(PlayersView.edit_player(choice))
                 if not date_of_birth:
-                    print(
-                        "La date de naissance est invalide, "
-                        "veuillez taper une date au format JJ/MM/AAAA"
-                    )
+                    ErrorsViews.wrong_date_format()
                     self.edit_player(tournament)
                 player_to_modify.date_of_birth = date_of_birth
             elif choice == 4:
-                gender = input("Entrez le sexe du joueur: ")
+                gender = PlayersView.edit_player(choice)
                 player_to_modify.gender = gender
             elif choice == 5:
-                rank = input("Entrez le score du joueur: ")
+                rank = PlayersView.edit_player(choice)
                 if Check.int_input(rank):
                     rank = int(rank)
                 else:
@@ -145,26 +118,18 @@ class PlayersController:
             elif choice == 6:
                 self.main(tournament)
             else:
-                print("Je n'ai pas compris votre choix.")
+                ErrorsViews.unknown_choice()
                 self.edit_player(tournament)
             crud_data.Data.save(tournaments.all_tournaments.tournaments)
-            print("La modification a été enregistrée.")
+            PlayersView.edit_player_success()
             self.main(tournament)
 
     def delete_player(self, tournament):
         if not tournament.players:
-            print("--------------")
-            print("Il n'y a aucun joueur d'enregistré.")
-            print("")
+            PlayersView.no_player()
             self.main(tournament)
         else:
-            print("--------------")
-            print("Quel joueur souhaitez-vous supprimer du tournoi ?")
-            print("")
-            for i, player in enumerate(tournament.players):
-                print(f"{i + 1}/ Supprimer {player} ?")
-            print(f"{len(tournament.players) + 1}/ Retour en arrière")
-            choice = input("Tapez le numéro du joueur à supprimer: ")
+            choice = PlayersView.delete_player(tournament)
 
             if Check.int_input(choice):
                 choice = int(choice) - 1
@@ -175,18 +140,15 @@ class PlayersController:
                 self.main(tournament)
 
             if choice > len(tournament.players):
-                print("Je n'ai pas compris votre choix.")
-                print(
-                    f"Veuillez saisir un chiffre compris "
-                    f"entre 1 et {len(tournament.players) + 1}"
-                )
+                ErrorsViews.unknown_choice()
+                ErrorsViews.number_required()
                 self.delete_player(tournament)
 
             player_to_delete = tournament.players[choice]
             if Check.deletion():
                 tournament.delete_player(player_to_delete)
                 crud_data.Data.save(tournaments.all_tournaments.tournaments)
-                print(f"Le joueur {player_to_delete} a bien été supprimé.")
+                PlayersView.delete_player_success(player_to_delete)
                 self.main(tournament)
             else:
                 self.main(tournament)

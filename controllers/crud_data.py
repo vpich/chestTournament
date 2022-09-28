@@ -2,6 +2,7 @@ from tinydb import TinyDB, Query
 from pathlib import Path
 
 from models import Tournament, Player, Round, Match
+from views import CrudViews
 from .checks import Check
 
 from .tournaments import TournamentsController
@@ -19,7 +20,7 @@ class Data:
     def save(tournaments_to_save):
         for tournament in tournaments_to_save:
             tournament.save()
-        print("Enregistrement dans le fichier db.json terminé.")
+        CrudViews.save()
 
     @staticmethod
     def delete_tournament(indice):
@@ -31,17 +32,16 @@ class Data:
         if Check.deletion():
             all_tournaments.tournaments = []
             db.truncate()
-            print("Suppression de tous les tournois du fichier db.json terminée")
+            CrudViews.delete()
             TournamentsController.main(tournaments_self)
         else:
-            print("Suppression annulée")
+            CrudViews.cancel_delete()
             TournamentsController.main(tournaments_self)
 
     @staticmethod
     def load():
         if not db_file_path.exists():
-            print("Le fichier db.json est introuvable.")
-            print("Aucun chargement de données n'a pu être effectué.")
+            CrudViews.file_not_found()
         else:
             db_file = TinyDB("db.json")
             table = db_file.table("_default")
@@ -105,7 +105,4 @@ class Data:
                         new_match.in_progress = bool(in_progress_bool)
                         new_match.result = (new_match.contestants, new_match.scores)
                         new_round.add_match(new_match)
-            if not db.all():
-                print("Aucune donnée n'a été chargée.")
-            else:
-                print("Chargement du fichier db.json terminé.")
+            CrudViews.load(db.all())

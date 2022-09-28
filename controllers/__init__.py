@@ -7,7 +7,6 @@ from .tournaments import TournamentsController
 from .rounds import RoundsController
 from .selected_tournament import SelectedTournamentController
 from .time_control import TimeControl
-from .rand_black_or_white import RandomizeColor
 
 __all__ = [
     "Check",
@@ -18,6 +17,5 @@ __all__ = [
     "RoundsController",
     "SelectedTournamentController",
     "TimeControl",
-    "TournamentsController",
-    "RandomizeColor"
+    "TournamentsController"
 ]

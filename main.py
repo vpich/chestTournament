@@ -1,11 +1,11 @@
-from views import WelcomeView
+from views import WelcomeView, Utilitaries
 
 from controllers import TournamentsController, Data
 
 WelcomeView.welcome()
 
 Data.load()
-print("")
+Utilitaries.empty_space()
 
 tournaments_self = TournamentsController()
 TournamentsController.main(tournaments_self)

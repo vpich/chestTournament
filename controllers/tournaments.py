@@ -1,5 +1,5 @@
 from models import AllTournaments, Tournament
-from views import TournamentsView, QuitView
+from views import TournamentsView, QuitView, ErrorsViews, Utilitaries
 from .checks import Check
 from .ranking import SortPlayers
 from . import crud_data
@@ -12,8 +12,7 @@ selected_tournament_self = SelectedTournamentController()
 
 class TournamentsController:
     def main(self):
-        TournamentsView.tournaments()
-        choice = input("Tapez le nombre du choix à sélectionner: ")
+        choice = TournamentsView.main()
 
         if Check.int_input(choice):
             choice = int(choice)
@@ -34,81 +33,53 @@ class TournamentsController:
             QuitView.quit()
             exit()
         else:
-            print("Je n'ai pas compris votre choix.")
+            ErrorsViews.unknown_choice()
             self.main()
-        print("")
+        Utilitaries.empty_space()
 
     def manage_tournament(self):
         if not all_tournaments.tournaments:
-            print("-----------")
-            print("Il n'y a aucun tounoi en cours")
-            print("")
+            TournamentsView.no_tournaments()
             self.main()
         else:
-            print("-----------")
-            print("Quel tournoi souhaitez-vous modifier ?")
-            print("")
-            for i, tournament in enumerate(all_tournaments.tournaments):
-                print(f"{i + 1}/ Le tournoi {tournament}")
-            print(f"{len(all_tournaments.tournaments) + 1}/ Retour en arrière")
-            selected_tournament = input("Tapez le numéro du tournoi à modifier: ")
+            selected_tournament = TournamentsView.manage(all_tournaments)
             if Check.int_input(selected_tournament):
                 selected_tournament = int(selected_tournament) - 1
             else:
                 self.manage_tournament()
 
             if selected_tournament < 0:
-                print("Je n'ai pas compris votre choix.")
-                print(
-                    f"Veuillez saisir un chiffre "
-                    f"entre 1 et {len(all_tournaments.tournaments) + 1}."
-                )
+                ErrorsViews.unknown_choice()
+                ErrorsViews.number_required()
                 self.manage_tournament()
             elif selected_tournament == len(all_tournaments.tournaments):
                 self.main()
             elif selected_tournament > len(all_tournaments.tournaments):
-                print("Je n'ai pas compris votre choix.")
-                print(
-                    f"Veuillez saisir un chiffre "
-                    f"entre 1 et {len(all_tournaments.tournaments) + 1}."
-                )
+                ErrorsViews.unknown_choice()
+                ErrorsViews.number_required()
                 self.manage_tournament()
 
             SelectedTournamentController.main(selected_tournament_self,
                                               all_tournaments.tournaments[selected_tournament])
 
     def show_tournaments(self):
-        print("---------------")
-        print(
-            f"Il y a actuellement "
-            f"{len(all_tournaments.tournaments)} tournoi(s) enregistré(s)."
-        )
+        TournamentsView.show(all_tournaments)
         for tournament in all_tournaments.tournaments:
-            print("---------------")
-            print(
-                f"Nom: {tournament.name}, Lieu: {tournament.place}, "
-                f"Date: {tournament.date}, "
-                f"Contrôle du temps: {tournament.time_control}, "
-                f"Nombre de tours: {tournament.number_of_rounds}"
-            )
-            print(
-                f"Il y a actuellement {len(tournament.rounds)} tour(s) "
-                "dans ce tournoi."
-            )
-            print("")
+            TournamentsView.show_each_tournament(tournament)
             SortPlayers.by_ranking(tournament)
         self.main()
 
     def add_tournament(self):
-        name = input("Entrez le nom du tournoi: ")
-        place = input("Entrez le lieu où se déroule le tournoi: ")
+        new_tournament_info = TournamentsView.add()
+        name = new_tournament_info["name"]
+        place = new_tournament_info["place"]
 
         if not all_tournaments.tournaments:
             tournament_id = 1
         else:
             tournament_id = len(all_tournaments.tournaments) + 1
 
-        start_date = Check.date_format(input("Entrez la date de début de tournoi (format JJ/MM/AAAA): "))
+        start_date = Check.date_format(new_tournament_info["start_date"])
         if not start_date:
             self.add_tournament()
         else:
@@ -116,12 +87,12 @@ class TournamentsController:
 
         time_control_signature = TimeControl()
         time_control = TimeControl.selection(time_control_signature)
-        number_of_rounds = input("Entrez le nombre de tours: ")
+        number_of_rounds = new_tournament_info["number_of_rounds"]
 
         if number_of_rounds == "":
             number_of_rounds = 4
         elif number_of_rounds == "0":
-            print("Le nombre de tour ne peut pas être nul.")
+            TournamentsView.number_of_round_not_null()
             self.add_tournament()
         elif not Check.int_input(number_of_rounds):
             self.add_tournament()
@@ -131,22 +102,19 @@ class TournamentsController:
         new_tournament = Tournament(
             tournament_id, name, place, start_date, time_control, number_of_rounds
         )
-        description = input("Entrez la description du tournoi: ")
+        description = new_tournament_info["description"]
         new_tournament.description = description
-        print("Tournoi bien créé")
+        TournamentsView.add_success()
         all_tournaments.add_tournament(new_tournament)
         crud_data.Data.save(all_tournaments.tournaments)
         self.main()
 
     def delete_tournament(self):
         if len(all_tournaments.tournaments) == 0:
-            print("Il n'y a aucun tounoi en cours")
+            TournamentsView.no_tournaments()
             self.main()
         else:
-            for i, tournament in enumerate(all_tournaments.tournaments):
-                print(f"{i + 1}/ Supprimer {tournament.name} ?")
-            print(f"{len(all_tournaments.tournaments) + 1}/ Retour en arrière")
-            choice = input("Tapez le numéro du tournoi à supprimer: ")
+            choice = TournamentsView.delete(all_tournaments)
 
             if Check.int_input(choice):
                 choice = int(choice) - 1
@@ -154,18 +122,15 @@ class TournamentsController:
                 self.delete_tournament()
 
             if choice >= len(all_tournaments.tournaments):
-                print("Je n'ai pas compris votre choix.")
-                print(
-                    f"Veuillez saisir un chiffre compris "
-                    f"entre 1 et {len(all_tournaments.tournaments) + 1}"
-                )
+                ErrorsViews.unknown_choice()
+                ErrorsViews.number_required()
                 self.delete_tournament()
 
             tournament_to_delete = all_tournaments.tournaments[choice]
             if Check.deletion():
                 all_tournaments.delete_tournament(tournament_to_delete)
                 crud_data.Data.delete_tournament(tournament_to_delete.tournament_id)
-                print(f"Le tournoi {tournament_to_delete.name} a bien été supprimé.")
+                TournamentsView.delete_success(tournament_to_delete)
                 self.main()
             else:
                 self.main()
