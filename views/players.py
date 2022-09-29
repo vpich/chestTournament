@@ -23,10 +23,13 @@ class PlayersView:
     def add_player():
         firstname = input("Entrez le prénom du joueur: ")
         lastname = input("Entrez le nom de famille du joueur: ")
-        date_of_birth = input("Entrez la date de naissance du joueur " "(format JJ/MM/AAAA): ")
-
         gender = input("Entrez le sexe du joueur: ")
         rank = input("Entrez le rang du joueur: ")
+        date_of_birth = ""
+        if rank.isdigit():
+            date_of_birth = input("Entrez la date de naissance du joueur " "(format JJ/MM/AAAA): ")
+        elif rank == "":
+            date_of_birth = input("Entrez la date de naissance du joueur " "(format JJ/MM/AAAA): ")
 
         return {
             "firstname": firstname,
@@ -38,7 +41,7 @@ class PlayersView:
 
     @staticmethod
     def add_player_success(player):
-        print(f'Le joueur {player["firstname"]} {player["lastname"]} '
+        print(f'Le joueur {player.firstname} {player.lastname} '
               f'a bien été ajouté au tournoi.')
 
     @staticmethod

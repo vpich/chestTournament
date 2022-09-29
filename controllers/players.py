@@ -1,4 +1,4 @@
-from views import PlayersView, ErrorsViews
+from views import PlayersView, ErrorsViews, Utilitaries
 from models import Player
 from .checks import Check
 from .ranking import SortPlayers
@@ -48,19 +48,20 @@ class PlayersController:
             else:
                 player_id = len(tournament.players) + 1
             new_player_info = PlayersView.add_player()
-            if not Check.date_format(new_player_info["date_of_birth"]):
-                ErrorsViews.wrong_date_format()
-                self.add_player(tournament)
 
             if new_player_info["rank"] == "":
                 rank = 0
             else:
                 if not Check.int_input(new_player_info["rank"]):
-                    print("La rang doit être un nombre entier.")
-                    print("")
+                    Utilitaries.empty_space()
                     self.add_player(tournament)
                 else:
                     rank = int(new_player_info["rank"])
+
+            if not Check.date_format(new_player_info["date_of_birth"]):
+                Utilitaries.empty_space()
+                self.add_player(tournament)
+
             new_player = Player(
                 player_id,
                 new_player_info["firstname"],
@@ -102,7 +103,6 @@ class PlayersController:
             elif choice == 3:
                 date_of_birth = Check.date_format(PlayersView.edit_player(choice))
                 if not date_of_birth:
-                    ErrorsViews.wrong_date_format()
                     self.edit_player(tournament)
                 player_to_modify.date_of_birth = date_of_birth
             elif choice == 4:

@@ -79,14 +79,6 @@ class TournamentsController:
         else:
             tournament_id = len(all_tournaments.tournaments) + 1
 
-        start_date = Check.date_format(new_tournament_info["start_date"])
-        if not start_date:
-            self.add_tournament()
-        else:
-            start_date = start_date.strftime("%d/%m/%Y")
-
-        time_control_signature = TimeControl()
-        time_control = TimeControl.selection(time_control_signature)
         number_of_rounds = new_tournament_info["number_of_rounds"]
 
         if number_of_rounds == "":
@@ -95,9 +87,21 @@ class TournamentsController:
             TournamentsView.number_of_round_not_null()
             self.add_tournament()
         elif not Check.int_input(number_of_rounds):
+            Utilitaries.empty_space()
             self.add_tournament()
         else:
             number_of_rounds = int(number_of_rounds)
+
+        start_date = Check.date_format(new_tournament_info["start_date"])
+        if not start_date:
+            ErrorsViews.unknown_choice()
+            Utilitaries.empty_space()
+            self.add_tournament()
+        else:
+            start_date = start_date.strftime("%d/%m/%Y")
+
+        time_control_signature = TimeControl()
+        time_control = TimeControl.selection(time_control_signature)
 
         new_tournament = Tournament(
             tournament_id, name, place, start_date, time_control, number_of_rounds

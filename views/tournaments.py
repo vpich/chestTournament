@@ -58,9 +58,14 @@ class TournamentsView:
     def add():
         name = input("Entrez le nom du tournoi: ")
         place = input("Entrez le lieu où se déroule le tournoi: ")
-        start_date = input("Entrez la date de début de tournoi (format JJ/MM/AAAA): ")
-        number_of_rounds = input("Entrez le nombre de tours: ")
         description = input("Entrez la description du tournoi: ")
+        number_of_rounds = input("Entrez le nombre de tours: ")
+        if number_of_rounds.isdigit():
+            start_date = input("Entrez la date de début de tournoi (format JJ/MM/AAAA): ")
+        elif number_of_rounds == "":
+            start_date = input("Entrez la date de début de tournoi (format JJ/MM/AAAA): ")
+        else:
+            start_date = ""
 
         return {
             "name": name,
@@ -73,6 +78,7 @@ class TournamentsView:
     @staticmethod
     def number_of_round_not_null():
         print("Le nombre de tour ne peut pas être nul.")
+        print("")
 
     @staticmethod
     def add_success():
@@ -89,4 +95,3 @@ class TournamentsView:
     @staticmethod
     def delete_success(tournament_to_delete):
         print(f"Le tournoi {tournament_to_delete.name} a bien été supprimé.")
-
