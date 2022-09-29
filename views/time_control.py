@@ -7,4 +7,3 @@ class TimeControlView:
 
         user_choice = input("Entrez le numéro du choix à selectionner: ")
         return user_choice
-
