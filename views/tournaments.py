@@ -87,7 +87,7 @@ class TournamentsView:
     @staticmethod
     def delete(all_tournaments):
         for i, tournament in enumerate(all_tournaments.tournaments):
-            print(f"{i + 1}/ Supprimer {tournament.name} ?")
+            print(f"{i + 1}/ Supprimer {tournament.name}")
         print(f"{len(all_tournaments.tournaments) + 1}/ Retour en arrière")
         choice = input("Tapez le numéro du tournoi à supprimer: ")
         return choice
