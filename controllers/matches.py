@@ -1,7 +1,8 @@
 import random
 
-from views import MatchesView, ErrorsViews
+from views import MatchesView, ErrorsViews, Utilitaries
 from .checks import Check
+from . import crud_data, tournaments
 
 
 class MatchesController:
@@ -51,12 +52,18 @@ class MatchesController:
             if winner == 1:
                 match.add_score_to_winner(match.contestants[0])
                 MatchesView.player_one_wins(match)
+                crud_data.Data.save(tournaments.all_tournaments.tournaments)
+                Utilitaries.empty_space()
             elif winner == 2:
                 match.add_score_to_winner(match.contestants[1])
                 MatchesView.player_two_wins(match)
+                crud_data.Data.save(tournaments.all_tournaments.tournaments)
+                Utilitaries.empty_space()
             elif winner == 3:
                 match.add_score_to_winner(None)
                 MatchesView.draw(match)
+                crud_data.Data.save(tournaments.all_tournaments.tournaments)
+                Utilitaries.empty_space()
             elif winner == 4:
                 pass
             else:
